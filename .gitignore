@@ -1,0 +1,33 @@
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Dependencies
+**/node_modules/
+**/package-lock.json
+
+# Build outputs
+**/dist/
+**/build/
+**/.next/
+**/out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+**/*.log
+**/logs/
+
+# Uploads (keep folder but ignore files)
+**/uploads/*
+!**/uploads/.gitkeep
