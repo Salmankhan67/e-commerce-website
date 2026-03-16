@@ -1,12 +1,12 @@
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { 
-  ShoppingCart, 
-  Trash2, 
-  Plus, 
-  Minus, 
-  ArrowLeft, 
+import {
+  ShoppingCart,
+  Trash2,
+  Plus,
+  Minus,
+  ArrowLeft,
   ArrowRight,
   Tag,
   Shield,
@@ -19,13 +19,12 @@ import {
 } from 'lucide-react';
 
 function Cart() {
-  const { cart, updateQuantity, removeFromCart } = useCart();
+  const { cart, updateQuantity, removeFromCart, clearCart } = useCart();
   const navigate = useNavigate();
   const [promoCode, setPromoCode] = useState('');
   const [promoApplied, setPromoApplied] = useState(false);
   const [promoDiscount, setPromoDiscount] = useState(0);
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(null);
-  const [suggestedProducts, setSuggestedProducts] = useState([]);
 
   // Calculate totals
   const subtotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
@@ -34,56 +33,45 @@ function Cart() {
   const discount = promoApplied ? subtotal * promoDiscount : 0;
   const total = subtotal + shipping + tax - discount;
 
-  // Load suggested products (you can replace with actual API call)
-  useEffect(() => {
-    // This would normally fetch from your backend
-    const mockSuggestions = [
-      { _id: '1', name: 'Wireless Headphones', price: 1999, image: 'https://via.placeholder.com/100' },
-      { _id: '2', name: 'Smart Watch', price: 2999, image: 'https://via.placeholder.com/100' },
-      { _id: '3', name: 'Bluetooth Speaker', price: 1499, image: 'https://via.placeholder.com/100' },
-    ];
-    setSuggestedProducts(mockSuggestions);
-  }, []);
-
- const handlePromoApply = async () => {
-  if (!promoCode.trim()) {
-    alert('Please enter a promo code');
-    return;
-  }
-
-  try {
-    const token = JSON.parse(localStorage.getItem('auth') || 'null')?.token;
-    if (!token) {
-      alert('Please login to apply promo');
+  const handlePromoApply = async () => {
+    if (!promoCode.trim()) {
+      alert('Please enter a promo code');
       return;
     }
 
-    const response = await fetch('http://localhost:5000/api/promo/validate', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        code: promoCode,
-        subtotal: subtotal
-      })
-    });
+    try {
+      const token = JSON.parse(localStorage.getItem('auth') || 'null')?.token;
+      if (!token) {
+        alert('Please login to apply promo');
+        return;
+      }
 
-    const data = await response.json();
+      const response = await fetch('http://localhost:5000/api/promo/validate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          code: promoCode,
+          subtotal: subtotal
+        })
+      });
 
-    if (data.valid) {
-      setPromoApplied(true);
-      setPromoDiscount(data.promo.discountAmount / subtotal);
-      alert(`✅ Promo applied! You saved Rs. ${data.promo.discountAmount}`);
-    } else {
-      alert('❌ ' + data.message);
+      const data = await response.json();
+
+      if (data.valid) {
+        setPromoApplied(true);
+        setPromoDiscount(data.promo.discountAmount / subtotal);
+        alert(`✅ Promo applied! You saved Rs. ${data.promo.discountAmount}`);
+      } else {
+        alert('❌ ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error applying promo:', error);
+      alert('❌ Failed to validate promo');
     }
-  } catch (error) {
-    console.error('Error applying promo:', error);
-    alert('❌ Failed to validate promo');
-  }
-};
+  };
 
   const handleRemovePromo = () => {
     setPromoApplied(false);
@@ -100,8 +88,38 @@ function Cart() {
   };
 
   const handleRemoveItem = (itemId) => {
-    removeFromCart(itemId);
-    setShowRemoveConfirm(null);
+    try {
+      removeFromCart(itemId);
+      setShowRemoveConfirm(null);
+      
+      // Show success notification
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+      notification.textContent = 'Item removed from cart';
+      document.body.appendChild(notification);
+      setTimeout(() => notification.remove(), 2000);
+    } catch (error) {
+      console.error('Error removing item:', error);
+      alert('Failed to remove item. Please try again.');
+    }
+  };
+
+  const handleClearCart = () => {
+    try {
+      if (window.confirm('Are you sure you want to clear your entire cart?')) {
+        clearCart();
+        
+        // Show success notification
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+        notification.textContent = 'Cart cleared successfully!';
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 2000);
+      }
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+      alert('Failed to clear cart. Please try again.');
+    }
   };
 
   if (cart.length === 0) {
@@ -142,26 +160,6 @@ function Cart() {
                 <Heart className="w-5 h-5 mr-2" />
                 View Wishlist
               </button>
-            </div>
-
-            {/* Suggested Products */}
-            <div className="mt-16">
-              <h3 className="text-xl font-semibold text-gray-800 mb-6">Popular Products</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {suggestedProducts.map(product => (
-                  <div key={product._id} className="bg-gray-50 rounded-xl p-4 hover:shadow-md transition">
-                    <img src={product.image} alt={product.name} className="w-full h-32 object-cover rounded-lg mb-3" />
-                    <h4 className="font-medium text-gray-800">{product.name}</h4>
-                    <p className="text-indigo-600 font-bold mt-1">₹{product.price}</p>
-                    <button
-                      onClick={() => navigate('/dashboard')}
-                      className="mt-3 w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 text-sm"
-                    >
-                      View Product
-                    </button>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>
@@ -233,9 +231,12 @@ function Cart() {
                       {/* Product Info */}
                       <div className="md:col-span-6 flex items-center space-x-4 w-full">
                         <img
-                          src={item.image || 'https://via.placeholder.com/80'}
+                          src={item.image ? `http://localhost:5000${item.image}` : 'https://via.placeholder.com/80?text=Product'}
                           alt={item.name}
                           className="w-20 h-20 object-cover rounded-lg"
+                          onError={(e) => {
+                            e.target.src = 'https://via.placeholder.com/80?text=Product';
+                          }}
                         />
                         <div className="flex-1">
                           <h3 className="font-semibold text-gray-800 mb-1">{item.name}</h3>
@@ -251,7 +252,7 @@ function Cart() {
                       {/* Price */}
                       <div className="md:col-span-2 text-center">
                         <span className="md:hidden font-medium text-gray-500 mr-2">Price:</span>
-                        <span className="font-semibold text-gray-800">₹{item.price}</span>
+                        <span className="font-semibold text-gray-800">Rs.{item.price}</span>
                       </div>
 
                       {/* Quantity Controls */}
@@ -280,7 +281,7 @@ function Cart() {
                       <div className="md:col-span-2 flex items-center justify-between md:justify-center">
                         <span className="md:hidden font-medium text-gray-500">Total:</span>
                         <span className="font-bold text-indigo-600">
-                          ₹{(item.price * (item.quantity || 1)).toLocaleString()}
+                          Rs.{(item.price * (item.quantity || 1)).toLocaleString()}
                         </span>
                         <button
                           onClick={() => setShowRemoveConfirm(item._id)}
@@ -294,7 +295,6 @@ function Cart() {
                   </div>
                 ))}
               </div>
-              
 
               {/* Cart Actions */}
               <div className="p-6 bg-gray-50 border-t">
@@ -308,11 +308,7 @@ function Cart() {
                       Add More Items
                     </button>
                     <button
-                      onClick={() => {
-                        if (window.confirm('Clear all items from cart?')) {
-                          cart.forEach(item => removeFromCart(item._id));
-                        }
-                      }}
+                      onClick={handleClearCart}
                       className="flex items-center text-red-500 hover:text-red-600"
                     >
                       <Trash2 className="w-4 h-4 mr-1" />
@@ -333,34 +329,34 @@ function Cart() {
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
-                  <span>₹{subtotal.toLocaleString()}</span>
+                  <span>Rs.{subtotal.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Shipping</span>
                   {shipping === 0 ? (
                     <span className="text-green-600 font-medium">Free</span>
                   ) : (
-                    <span>₹{shipping}</span>
+                    <span>Rs.{shipping.toLocaleString()}</span>
                   )}
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Tax (18% GST)</span>
-                  <span>₹{tax.toLocaleString()}</span>
+                  <span>Rs.{tax.toLocaleString()}</span>
                 </div>
                 {promoApplied && (
                   <div className="flex justify-between text-green-600">
                     <span>Discount ({(promoDiscount * 100)}%)</span>
-                    <span>-₹{discount.toLocaleString()}</span>
+                    <span>-Rs.{discount.toLocaleString()}</span>
                   </div>
                 )}
                 <div className="border-t pt-4">
                   <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>
-                    <span className="text-indigo-600">₹{total.toLocaleString()}</span>
+                    <span className="text-indigo-600">Rs.{total.toLocaleString()}</span>
                   </div>
                   {subtotal < 999 && (
                     <p className="text-xs text-gray-500 mt-2">
-                      Add ₹{(999 - subtotal).toLocaleString()} more for free shipping
+                      Add Rs.{(999 - subtotal).toLocaleString()} more for free shipping
                     </p>
                   )}
                 </div>

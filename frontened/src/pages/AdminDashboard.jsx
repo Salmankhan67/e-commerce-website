@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { 
-  LayoutDashboard, 
-  Package, 
-  ShoppingCart, 
-  TrendingUp, 
-  Users, 
+import {
+  LayoutDashboard,
+  Package,
+  ShoppingCart,
+  TrendingUp,
+  Users,
   Settings,
   Plus,
   Edit,
@@ -44,7 +44,7 @@ import {
   Shield,
   Gift
 } from "lucide-react";
-
+import ImageUpload from '../Components/ImageUpload';
 function AdminDashboard() {
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -53,7 +53,7 @@ function AdminDashboard() {
   const [promoCodes, setPromoCodes] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   // UI State
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // ADDED
@@ -62,7 +62,7 @@ function AdminDashboard() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [dateRange, setDateRange] = useState("today");
   const [viewMode, setViewMode] = useState("grid");
-  
+
   // Modal States
   const [showAddProductModal, setShowAddProductModal] = useState(false);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
@@ -70,7 +70,7 @@ function AdminDashboard() {
   const [showEditModal, setShowEditModal] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [showOrderDetails, setShowOrderDetails] = useState(null);
-  
+
   // Form States
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -318,7 +318,7 @@ function AdminDashboard() {
         },
         body: JSON.stringify(promoData),
       });
-      
+
       alert('✅ Promo code created successfully!');
       setShowAddPromoModal(false);
       resetPromoForm();
@@ -405,7 +405,7 @@ function AdminDashboard() {
   // ========== RESET FORMS ==========
   const resetProductForm = () => {
     setNewProduct({
-      name: "", price: "", image: "", description: "", 
+      name: "", price: "", image: "", description: "",
       stock: 100, discount: 0, category: "", featured: false,
       images: [], specifications: {}, taxRate: 18
     });
@@ -426,7 +426,7 @@ function AdminDashboard() {
 
   // ========== HELPER FUNCTIONS ==========
   const getStatusColor = (status) => {
-    switch(status?.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case 'pending': return 'bg-yellow-100 text-yellow-800';
       case 'processing': return 'bg-blue-100 text-blue-800';
       case 'shipped': return 'bg-purple-100 text-purple-800';
@@ -437,7 +437,7 @@ function AdminDashboard() {
   };
 
   const getStatusIcon = (status) => {
-    switch(status?.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case 'pending': return <Clock className="w-4 h-4" />;
       case 'processing': return <RefreshCw className="w-4 h-4" />;
       case 'shipped': return <Truck className="w-4 h-4" />;
@@ -466,7 +466,7 @@ function AdminDashboard() {
   const shippedOrders = orders.filter(o => o.status === "Shipped").length;
   const deliveredOrders = orders.filter(o => o.status === "Delivered").length;
   const cancelledOrders = orders.filter(o => o.status === "Cancelled").length;
-  
+
   const totalTaxCollected = orders.reduce((sum, order) => sum + (order.tax || 0), 0);
   const averageOrderValue = orders.length > 0 ? totalRevenue / orders.length : 0;
   const conversionRate = users.length > 0 ? (orders.length / users.length * 100).toFixed(1) : 0;
@@ -510,7 +510,7 @@ function AdminDashboard() {
     <div className="flex h-screen bg-gray-50">
       {/* ========== MOBILE HEADER ========== ADDED */}
       <div className="lg:hidden bg-white shadow-md p-4 flex items-center justify-between sticky top-0 z-20">
-        <button 
+        <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="p-2 hover:bg-gray-100 rounded-lg"
         >
@@ -524,7 +524,7 @@ function AdminDashboard() {
 
       {/* ========== MOBILE SIDEBAR OVERLAY ========== ADDED */}
       {mobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
@@ -546,9 +546,8 @@ function AdminDashboard() {
                 setActiveTab(item.id);
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center px-4 py-3 rounded-lg mb-1 ${
-                activeTab === item.id ? 'bg-indigo-600 text-white' : 'hover:bg-gray-100'
-              }`}
+              className={`w-full flex items-center px-4 py-3 rounded-lg mb-1 ${activeTab === item.id ? 'bg-indigo-600 text-white' : 'hover:bg-gray-100'
+                }`}
             >
               <item.icon className="w-5 h-5 mr-3" />
               {item.name}
@@ -572,7 +571,7 @@ function AdminDashboard() {
           ) : (
             <h1 className="text-xl font-bold text-indigo-600 mx-auto">SF</h1>
           )}
-          <button 
+          <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="p-1 hover:bg-gray-100 rounded-lg"
           >
@@ -585,11 +584,10 @@ function AdminDashboard() {
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center ${sidebarOpen ? 'px-4' : 'px-2 justify-center'} py-3 rounded-lg mb-1 transition-colors relative ${
-                activeTab === item.id
-                  ? "bg-indigo-50 text-indigo-600"
-                  : "text-gray-600 hover:bg-gray-50"
-              }`}
+              className={`w-full flex items-center ${sidebarOpen ? 'px-4' : 'px-2 justify-center'} py-3 rounded-lg mb-1 transition-colors relative ${activeTab === item.id
+                ? "bg-indigo-50 text-indigo-600"
+                : "text-gray-600 hover:bg-gray-50"
+                }`}
             >
               <item.icon className="w-5 h-5" />
               {sidebarOpen && (
@@ -641,7 +639,7 @@ function AdminDashboard() {
                 </select>
               )}
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -653,12 +651,12 @@ function AdminDashboard() {
                   className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-64"
                 />
               </div>
-              
+
               <button className="p-2 hover:bg-gray-100 rounded-full relative">
                 <Bell className="w-5 h-5 text-gray-600" />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
-              
+
               <div className="flex items-center space-x-3">
                 <img
                   src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
@@ -701,7 +699,7 @@ function AdminDashboard() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-500 mb-1">Total Revenue</p>
-                      <p className="text-2xl font-bold text-gray-800">₹{totalRevenue.toLocaleString()}</p>
+                      <p className="text-2xl font-bold text-gray-800">Rs.{totalRevenue.toLocaleString()}</p>
                       <p className="text-xs text-green-500 mt-2">↑ 12.5% from last month</p>
                     </div>
                     <div className="bg-green-500 p-3 rounded-lg">
@@ -819,7 +817,7 @@ function AdminDashboard() {
                     <div>
                       <div className="flex justify-between text-sm mb-1">
                         <span className="text-gray-500">Average Order Value</span>
-                        <span className="font-medium">₹{averageOrderValue.toFixed(2)}</span>
+                        <span className="font-medium">Rs.{averageOrderValue.toFixed(2)}</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div className="bg-indigo-600 h-2 rounded-full" style={{ width: '70%' }}></div>
@@ -837,7 +835,7 @@ function AdminDashboard() {
                     <div>
                       <div className="flex justify-between text-sm mb-1">
                         <span className="text-gray-500">Tax Collected</span>
-                        <span className="font-medium">₹{totalTaxCollected.toLocaleString()}</span>
+                        <span className="font-medium">Rs.{totalTaxCollected.toLocaleString()}</span>
                       </div>
                     </div>
                   </div>
@@ -864,7 +862,7 @@ function AdminDashboard() {
                     View All
                   </button>
                 </div>
-                
+
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
@@ -882,8 +880,8 @@ function AdminDashboard() {
                         <tr key={order._id} className="border-b border-gray-100 hover:bg-gray-50">
                           <td className="py-3 text-sm font-medium text-gray-800">#{order._id?.slice(-8)}</td>
                           <td className="py-3 text-sm text-gray-600">{order.userId?.name || 'N/A'}</td>
-                          <td className="py-3 text-sm font-medium text-gray-800">₹{order.total}</td>
-                          <td className="py-3 text-sm text-gray-600">₹{order.tax || 0}</td>
+                          <td className="py-3 text-sm font-medium text-gray-800">Rs.{order.total}</td>
+                          <td className="py-3 text-sm text-gray-600">Rs.{order.tax || 0}</td>
                           <td className="py-3">
                             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                               {getStatusIcon(order.status)}
@@ -938,9 +936,12 @@ function AdminDashboard() {
                     <div key={product._id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition">
                       <div className="relative h-48">
                         <img
-                          src={product.image || 'https://via.placeholder.com/300'}
+                          src={product.image ? `http://localhost:5000${product.image}` : 'https://via.placeholder.com/300?text=Product'}
                           alt={product.name}
-                          className="w-full h-full object-cover"
+                          className="w-50 h-48 object-cover hover:scale-105 transition-transform"
+                          onError={(e) => {
+                            e.target.src = 'https://via.placeholder.com/300?text=Product';
+                          }}
                         />
                         {product.discount > 0 && (
                           <span className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
@@ -953,28 +954,27 @@ function AdminDashboard() {
                           </span>
                         )}
                       </div>
-                      
+
                       <div className="p-4">
                         <div className="flex items-start justify-between">
                           <div>
                             <h4 className="font-semibold text-gray-800">{product.name}</h4>
                             <p className="text-xs text-gray-500">{product.category}</p>
                           </div>
-                          <span className={`text-xs font-medium px-2 py-1 rounded ${
-                            product.stock > 20 ? 'bg-green-100 text-green-800' : 
-                            product.stock > 0 ? 'bg-yellow-100 text-yellow-800' : 
-                            'bg-red-100 text-red-800'
-                          }`}>
+                          <span className={`text-xs font-medium px-2 py-1 rounded ${product.stock > 20 ? 'bg-green-100 text-green-800' :
+                            product.stock > 0 ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-red-100 text-red-800'
+                            }`}>
                             Stock: {product.stock}
                           </span>
                         </div>
 
                         <div className="mt-3">
                           <div className="flex items-baseline">
-                            <span className="text-lg font-bold text-gray-800">₹{product.price}</span>
+                            <span className="text-lg font-bold text-gray-800">Rs.{product.price}</span>
                             {product.discount > 0 && (
                               <span className="ml-2 text-xs text-gray-400 line-through">
-                                ₹{Math.round(product.price * (1 + product.discount/100))}
+                                Rs.{Math.round(product.price * (1 + product.discount / 100))}
                               </span>
                             )}
                           </div>
@@ -1025,18 +1025,25 @@ function AdminDashboard() {
                         <tr key={product._id} className="hover:bg-gray-50">
                           <td className="px-6 py-4">
                             <div className="flex items-center space-x-3">
-                              <img src={product.image} alt={product.name} className="w-10 h-10 object-cover rounded" />
-                              <span className="font-medium">{product.name}</span>
+
+                              <img
+                                src={product.image ? `http://localhost:5000${product.image}` : 'https://via.placeholder.com/40?text=Product'}
+                                alt={product.name}
+                                className="w-10 h-10 object-cover rounded"
+                                onError={(e) => {
+                                  e.target.src = 'https://via.placeholder.com/40?text=Product';
+                                }}
+                              />   
+                               <span className="font-medium">{product.name}</span>
                             </div>
                           </td>
                           <td className="px-6 py-4">{product.category}</td>
                           <td className="px-6 py-4 font-medium">₹{product.price}</td>
                           <td className="px-6 py-4">
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              product.stock > 20 ? 'bg-green-100 text-green-800' : 
-                              product.stock > 0 ? 'bg-yellow-100 text-yellow-800' : 
-                              'bg-red-100 text-red-800'
-                            }`}>
+                            <span className={`px-2 py-1 rounded-full text-xs ${product.stock > 20 ? 'bg-green-100 text-green-800' :
+                              product.stock > 0 ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-red-100 text-red-800'
+                              }`}>
                               {product.stock}
                             </span>
                           </td>
@@ -1112,13 +1119,13 @@ function AdminDashboard() {
                             {order.items?.length} items
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-600">
-                            ₹{order.subtotal || order.total}
+                            Rs.{order.subtotal || order.total}
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-600">
-                            ₹{order.tax || 0}
+                            Rs.{order.tax || 0}
                           </td>
                           <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                            ₹{order.total}
+                            Rs.{order.total}
                           </td>
                           <td className="px-6 py-4">
                             <span className={`inline-flex items-center px-2.5 py-1.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
@@ -1194,7 +1201,7 @@ function AdminDashboard() {
                     <p className="text-sm text-gray-600 mb-4">{category.description}</p>
                     <div className="flex items-center justify-between">
                       <button className="text-blue-600 hover:text-blue-800 text-sm">Edit</button>
-                      <button 
+                      <button
                         onClick={() => setShowDeleteConfirm({ type: 'categories', id: category._id })}
                         className="text-red-600 hover:text-red-800 text-sm"
                       >
@@ -1232,7 +1239,7 @@ function AdminDashboard() {
                         <div>
                           <h4 className="font-mono font-bold text-lg">{promo.code}</h4>
                           <p className="text-xs text-gray-500">
-                            {promo.discountType === 'percentage' ? `${promo.discountValue}% OFF` : `₹${promo.discountValue} OFF`}
+                            {promo.discountType === 'percentage' ? `${promo.discountValue}% OFF` : `Rs.${promo.discountValue} OFF`}
                           </p>
                         </div>
                       </div>
@@ -1247,15 +1254,15 @@ function AdminDashboard() {
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-gray-500">Min Order:</span>
-                        <span className="font-medium">₹{promo.minOrderValue || 0}</span>
+                        <span className="font-medium">Rs.{promo.minOrderValue || 0}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-500">Max Discount:</span>
-                        <span className="font-medium">₹{promo.maxDiscount || 'No limit'}</span>
+                        <span className="font-medium">Rs.{promo.maxDiscount || 'No limit'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-500">Usage:</span>
-                        <span className="font-medium">{promo.usedCount || 0} / {promo.usageLimit || '∞'}</span>
+                        <span className="font-medium">Rs.{promo.usedCount || 0} / {promo.usageLimit || '∞'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-500">Valid:</span>
@@ -1267,7 +1274,7 @@ function AdminDashboard() {
 
                     <div className="mt-4 pt-4 border-t flex justify-between">
                       <button className="text-blue-600 hover:text-blue-800 text-sm">Edit</button>
-                      <button 
+                      <button
                         onClick={() => setShowDeleteConfirm({ type: 'promo', id: promo._id })}
                         className="text-red-600 hover:text-red-800 text-sm"
                       >
@@ -1364,7 +1371,7 @@ function AdminDashboard() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Price (₹)
+                    Price (Rs.)
                   </label>
                   <input
                     type="number"
@@ -1427,16 +1434,20 @@ function AdminDashboard() {
                   </select>
                 </div>
 
+                {/* ===== REPLACE THE IMAGE URL INPUT WITH THIS ===== */}
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Image URL
+                    Product Image
                   </label>
-                  <input
-                    required
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    value={newProduct.image}
-                    onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
+                  <ImageUpload
+                    onImageUploaded={(url) => setNewProduct({ ...newProduct, image: url })}
+                    existingImage={newProduct.image}
                   />
+                  {newProduct.image && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      ✓ Image ready: {newProduct.image}
+                    </p>
+                  )}
                 </div>
 
                 <div className="col-span-2">
@@ -1669,7 +1680,7 @@ function AdminDashboard() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Max Discount (₹)
+                    Max Discount (Rs.)
                   </label>
                   <input
                     type="number"
@@ -1830,7 +1841,7 @@ function AdminDashboard() {
                           <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
                         </div>
                       </div>
-                      <p className="font-medium">₹{item.price * item.quantity}</p>
+                      <p className="font-medium">Rs.{item.price * item.quantity}</p>
                     </div>
                   ))}
                 </div>
@@ -1842,21 +1853,21 @@ function AdminDashboard() {
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <div className="flex justify-between mb-2">
                     <span>Subtotal:</span>
-                    <span>₹{showOrderDetails.subtotal || showOrderDetails.total}</span>
+                    <span>Rs.{showOrderDetails.subtotal || showOrderDetails.total}</span>
                   </div>
                   <div className="flex justify-between mb-2">
                     <span>Tax:</span>
-                    <span>₹{showOrderDetails.tax || 0}</span>
+                    <span>Rs.{showOrderDetails.tax || 0}</span>
                   </div>
                   {showOrderDetails.discount > 0 && (
                     <div className="flex justify-between mb-2 text-green-600">
                       <span>Discount:</span>
-                      <span>-₹{showOrderDetails.discount}</span>
+                      <span>-Rs.{showOrderDetails.discount}</span>
                     </div>
                   )}
                   <div className="flex justify-between font-bold text-lg border-t pt-2 mt-2">
                     <span>Total:</span>
-                    <span>₹{showOrderDetails.total}</span>
+                    <span>Rs.{showOrderDetails.total}</span>
                   </div>
                 </div>
               </div>

@@ -1,13 +1,13 @@
 import { useCart } from '../context/CartContext';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  ShoppingBag, 
-  Search, 
-  Filter, 
-  Heart, 
-  Star, 
-  ChevronLeft, 
+import {
+  ShoppingBag,
+  Search,
+  Filter,
+  Heart,
+  Star,
+  ChevronLeft,
   ChevronRight,
   ShoppingCart,
   User,
@@ -27,7 +27,7 @@ function Dashboard() {
   const cartContext = useCart();
   const { addToCart, totalItems, cart } = cartContext || {};
   const navigate = useNavigate();
-  
+
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,7 +42,7 @@ function Dashboard() {
   const [wishlist, setWishlist] = useState([]);
   const [showCartPreview, setShowCartPreview] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  
+
   const productsPerPage = 8;
 
   // Get categories from products
@@ -54,8 +54,8 @@ function Dashboard() {
         <div className="bg-white p-8 rounded-2xl shadow-xl text-center">
           <ShoppingBag className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <p className="text-red-600 text-lg font-semibold">Cart context unavailable!</p>
-          <button 
-            onClick={() => window.location.reload()} 
+          <button
+            onClick={() => window.location.reload()}
             className="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
           >
             Retry
@@ -85,7 +85,7 @@ function Dashboard() {
 
   const fetchProducts = () => {
     const token = getToken();
-    
+
     if (!token) {
       console.error('No token found, redirecting to login');
       navigate('/signin');
@@ -93,7 +93,7 @@ function Dashboard() {
     }
 
     fetch('http://localhost:5000/api/products', {
-      headers: { 
+      headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
@@ -154,7 +154,7 @@ function Dashboard() {
 
     // Apply search
     if (searchTerm) {
-      result = result.filter(p => 
+      result = result.filter(p =>
         p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.description?.toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -172,7 +172,7 @@ function Dashboard() {
     });
 
     // Apply sorting
-    switch(sortBy) {
+    switch (sortBy) {
       case 'price-low':
         result.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
         break;
@@ -237,7 +237,7 @@ function Dashboard() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Mobile Sidebar */}
       <div className={`fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity lg:hidden ${sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} onClick={() => setSidebarOpen(false)} />
-      
+
       <div className={`fixed top-0 left-0 h-full w-64 bg-white shadow-2xl z-50 transform transition-transform lg:hidden ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6 border-b">
           <div className="flex items-center justify-between">
@@ -307,7 +307,7 @@ function Dashboard() {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <button 
+                <button
                   onClick={() => setSidebarOpen(true)}
                   className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
                 >
@@ -350,18 +350,27 @@ function Dashboard() {
                         <>
                           {cart?.map((item, index) => (
                             <div key={index} className="flex items-center space-x-3 mb-3 pb-3 border-b last:border-0">
-                              <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded" />
+                              {/* // Display product image with fallback */}
+
+                              <img
+                                src={item.image ? `http://localhost:5000${item.image}` : 'https://via.placeholder.com/50?text=Product'}
+                                alt={item.name}
+                                className="w-12 h-12 object-cover rounded"
+                                onError={(e) => {
+                                  e.target.src = 'https://via.placeholder.com/50?text=Product';
+                                }}
+                              />
                               <div className="flex-1">
                                 <p className="text-sm font-medium line-clamp-1">{item.name}</p>
                                 <p className="text-xs text-gray-500">Qty: {item.quantity || 1}</p>
                               </div>
-                              <p className="text-sm font-bold">₹{item.price}</p>
+                              <p className="text-sm font-bold">Rs.{item.price}</p>
                             </div>
                           ))}
                           <div className="mt-4 pt-4 border-t">
                             <div className="flex justify-between mb-4">
                               <span>Total:</span>
-                              <span className="font-bold">₹{getCartTotal()}</span>
+                              <span className="font-bold">Rs.{getCartTotal()}</span>
                             </div>
                             <button
                               onClick={() => navigate('/cart')}
@@ -551,15 +560,21 @@ function Dashboard() {
             {viewMode === 'grid' ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {currentProducts.map(product => (
-                  <div 
-                    key={product._id} 
+                  <div
+                    key={product._id}
                     className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group"
                   >
                     <div className="relative overflow-hidden rounded-t-2xl">
-                      <img 
-                        src={product.image || 'https://via.placeholder.com/300?text=Product'} 
-                        alt={product.name} 
+
+                      {/* //images// */}
+
+                      <img
+                        src={product.image ? `http://localhost:5000${product.image}` : 'https://via.placeholder.com/300?text=Product'}
+                        alt={product.name}
                         className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
+                        onError={(e) => {
+                          e.target.src = 'https://via.placeholder.com/300?text=Product';
+                        }}
                       />
                       {product.discount > 0 && (
                         <span className="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
@@ -568,11 +583,10 @@ function Dashboard() {
                       )}
                       <button
                         onClick={() => toggleWishlist(product)}
-                        className={`absolute top-4 right-4 p-2 rounded-full transition ${
-                          isInWishlist(product._id) 
-                            ? 'bg-red-500 text-white' 
-                            : 'bg-white text-gray-600 hover:bg-red-500 hover:text-white'
-                        }`}
+                        className={`absolute top-4 right-4 p-2 rounded-full transition ${isInWishlist(product._id)
+                          ? 'bg-red-500 text-white'
+                          : 'bg-white text-gray-600 hover:bg-red-500 hover:text-white'
+                          }`}
                       >
                         <Heart className={`w-4 h-4 ${isInWishlist(product._id) ? 'fill-current' : ''}`} />
                       </button>
@@ -588,29 +602,27 @@ function Dashboard() {
                       <p className="text-gray-500 text-sm mb-3 line-clamp-2">{product.description}</p>
                       <div className="flex items-center justify-between mb-4">
                         <div>
-                          <span className="text-2xl font-bold text-indigo-600">₹{product.price}</span>
+                          <span className="text-2xl font-bold text-indigo-600">Rs.{product.price}</span>
                           {product.discount > 0 && (
                             <span className="ml-2 text-sm text-gray-400 line-through">
-                              ₹{Math.round(product.price * (1 + product.discount/100))}
+                              Rs.{Math.round(product.price * (1 + product.discount / 100))}
                             </span>
                           )}
                         </div>
-                        <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                          product.stock > 10 ? 'bg-green-100 text-green-800' : 
-                          product.stock > 0 ? 'bg-yellow-100 text-yellow-800' : 
-                          'bg-red-100 text-red-800'
-                        }`}>
+                        <span className={`text-xs font-medium px-2 py-1 rounded-full ${product.stock > 10 ? 'bg-green-100 text-green-800' :
+                          product.stock > 0 ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
                           {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
                         </span>
                       </div>
                       <button
                         onClick={() => handleAddToCart(product)}
                         disabled={product.stock === 0}
-                        className={`w-full py-3 rounded-xl font-semibold transition flex items-center justify-center space-x-2 ${
-                          product.stock > 0 
-                            ? 'bg-indigo-600 hover:bg-indigo-700 text-white' 
-                            : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                        }`}
+                        className={`w-full py-3 rounded-xl font-semibold transition flex items-center justify-center space-x-2 ${product.stock > 0
+                          ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                          : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                          }`}
                       >
                         <ShoppingCart className="w-4 h-4" />
                         <span>{product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}</span>
@@ -624,10 +636,16 @@ function Dashboard() {
                 {currentProducts.map(product => (
                   <div key={product._id} className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-xl transition">
                     <div className="flex flex-col md:flex-row md:items-center gap-6">
-                      <img 
-                        src={product.image || 'https://via.placeholder.com/300?text=Product'} 
-                        alt={product.name} 
+
+                      {/* //IMAGES// */}
+
+                      <img
+                        src={product.image ? `http://localhost:5000${product.image}` : 'https://via.placeholder.com/300?text=Product'}
+                        alt={product.name}
                         className="w-full md:w-32 h-32 object-cover rounded-xl"
+                        onError={(e) => {
+                          e.target.src = 'https://via.placeholder.com/300?text=Product';
+                        }}
                       />
                       <div className="flex-1">
                         <div className="flex items-start justify-between">
@@ -637,32 +655,29 @@ function Dashboard() {
                           </div>
                           <button
                             onClick={() => toggleWishlist(product)}
-                            className={`p-2 rounded-full ${
-                              isInWishlist(product._id) ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
-                            }`}
+                            className={`p-2 rounded-full ${isInWishlist(product._id) ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
+                              }`}
                           >
                             <Heart className={`w-5 h-5 ${isInWishlist(product._id) ? 'fill-current' : ''}`} />
                           </button>
                         </div>
                         <div className="flex flex-wrap items-center justify-between mt-4">
                           <div className="flex items-center space-x-4">
-                            <span className="text-2xl font-bold text-indigo-600">₹{product.price}</span>
-                            <span className={`text-sm font-medium px-3 py-1 rounded-full ${
-                              product.stock > 10 ? 'bg-green-100 text-green-800' : 
-                              product.stock > 0 ? 'bg-yellow-100 text-yellow-800' : 
-                              'bg-red-100 text-red-800'
-                            }`}>
+                            <span className="text-2xl font-bold text-indigo-600">Rs.{product.price}</span>
+                            <span className={`text-sm font-medium px-3 py-1 rounded-full ${product.stock > 10 ? 'bg-green-100 text-green-800' :
+                              product.stock > 0 ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-red-100 text-red-800'
+                              }`}>
                               {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
                             </span>
                           </div>
                           <button
                             onClick={() => handleAddToCart(product)}
                             disabled={product.stock === 0}
-                            className={`px-6 py-2 rounded-lg font-semibold transition flex items-center space-x-2 ${
-                              product.stock > 0 
-                                ? 'bg-indigo-600 hover:bg-indigo-700 text-white' 
-                                : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                            }`}
+                            className={`px-6 py-2 rounded-lg font-semibold transition flex items-center space-x-2 ${product.stock > 0
+                              ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                              : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                              }`}
                           >
                             <ShoppingCart className="w-4 h-4" />
                             <span>Add to Cart</span>
@@ -689,11 +704,10 @@ function Dashboard() {
                   <button
                     key={i + 1}
                     onClick={() => setCurrentPage(i + 1)}
-                    className={`w-10 h-10 rounded-lg transition ${
-                      currentPage === i + 1
-                        ? 'bg-indigo-600 text-white'
-                        : 'hover:bg-gray-100'
-                    }`}
+                    className={`w-10 h-10 rounded-lg transition ${currentPage === i + 1
+                      ? 'bg-indigo-600 text-white'
+                      : 'hover:bg-gray-100'
+                      }`}
                   >
                     {i + 1}
                   </button>
@@ -711,11 +725,12 @@ function Dashboard() {
         )}
 
         {/* Features Section */}
+
         <div className="mt-16 grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded-xl shadow-sm">
             <Truck className="w-10 h-10 text-indigo-600 mb-4" />
             <h3 className="font-semibold mb-2">Free Shipping</h3>
-            <p className="text-sm text-gray-500">On orders above ₹999</p>
+            <p className="text-sm text-gray-500">On orders above Rs.999</p>
           </div>
           <div className="bg-white p-6 rounded-xl shadow-sm">
             <Shield className="w-10 h-10 text-indigo-600 mb-4" />

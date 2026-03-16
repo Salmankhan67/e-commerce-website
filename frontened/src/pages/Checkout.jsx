@@ -416,10 +416,9 @@ function Checkout() {
   }
 };
 
-
 const nextStep = () => {
   if (step === 1) {
-    // Validate all fields
+    // Validate Step 1 - Shipping Information
     const newErrors = {};
     
     // Personal Info
@@ -454,8 +453,50 @@ const nextStep = () => {
       return;
     }
     
-    // No errors - go to next step
-    setStep(step + 1);
+    // No errors - go to Step 2 (Payment Method)
+    setStep(2);
+    
+  } else if (step === 2) {
+    // ===== NEW: Validate Step 2 - Payment Method =====
+    
+    // Check if payment method is selected
+    if (!paymentMethod) {
+      alert('❌ Please select a payment method');
+      return;
+    }
+    
+    // Validate based on selected payment method
+    if (paymentMethod === 'easypaisa' && !formData.easypaisaNumber) {
+      alert('❌ Please enter your EasyPaisa number');
+      return;
+    }
+    
+    if (paymentMethod === 'jazzcash' && !formData.jazzcashNumber) {
+      alert('❌ Please enter your JazzCash number');
+      return;
+    }
+    
+    if (paymentMethod === 'card') {
+      if (!formData.cardNumber) {
+        alert('❌ Please enter card number');
+        return;
+      }
+      if (!formData.cardName) {
+        alert('❌ Please enter name on card');
+        return;
+      }
+      if (!formData.expiryMonth || !formData.expiryYear) {
+        alert('❌ Please enter card expiry date');
+        return;
+      }
+      if (!formData.cvv) {
+        alert('❌ Please enter CVV');
+        return;
+      }
+    }
+    
+    // If all validations pass, go to Step 3 (Review Order)
+    setStep(3);
   }
 };
   //this is the function to go back to the previous step in the checkout process

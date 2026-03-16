@@ -49,12 +49,24 @@ export const CartProvider = ({ children }) => {
     );
   };
 
+  // ===== NEW: CLEAR CART FUNCTION =====
+  const clearCart = () => {
+    setCart([]);
+  };
+
   const totalItems = Array.isArray(cart)
     ? cart.reduce((sum, item) => sum + (item.quantity || 0), 0)
     : 0;
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, totalItems }}>
+    <CartContext.Provider value={{ 
+      cart, 
+      addToCart, 
+      removeFromCart, 
+      updateQuantity, 
+      clearCart, // ← ADD THIS
+      totalItems 
+    }}>
       {children}
     </CartContext.Provider>
   );

@@ -8,6 +8,7 @@ const app = express();
 
 // Replace ALL your CORS code with this single line
 app.use(cors({ origin: true, credentials: true }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(express.json());
 
@@ -16,7 +17,7 @@ app.use('/api/auth', require('./routes/router'));
 app.use('/api/products', require('./routes/Products')); 
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/promo', require('./routes/promo'));
-
+app.use('/api/upload', require('./routes/upload'));
 const dns = require("node:dns/promises");
 dns.setServers(["1.1.1.1", "8.8.8.8", "8.8.4.4"]);
 

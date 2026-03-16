@@ -1,15 +1,15 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useState, useEffect, useRef } from 'react';
-import { 
-  ShoppingCart, 
-  User, 
-  LogOut, 
-  Menu, 
-  X, 
-  Home, 
-  Package, 
-  Heart, 
+import {
+  ShoppingCart,
+  User,
+  LogOut,
+  Menu,
+  X,
+  Home,
+  Package,
+  Heart,
   Search,
   ChevronDown,
   Store,
@@ -33,7 +33,7 @@ function Navbar({ isLoggedIn, onLogout }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [categories, setCategories] = useState([]);
   const [user, setUser] = useState(null);
-  
+
   const profileRef = useRef(null);
   const cartRef = useRef(null);
   const menuRef = useRef(null);
@@ -118,11 +118,10 @@ function Navbar({ isLoggedIn, onLogout }) {
       </div>
 
       {/* Main Navbar */}
-      <nav className={`sticky top-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white/95 backdrop-blur-md shadow-lg' 
+      <nav className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled
+          ? 'bg-white/95 backdrop-blur-md shadow-lg'
           : 'bg-white'
-      }`}>
+        }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo and Mobile Menu */}
@@ -152,11 +151,10 @@ function Navbar({ isLoggedIn, onLogout }) {
             <div className="hidden lg:flex items-center space-x-8">
               <Link
                 to="/dashboard"
-                className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition ${
-                  isActive('/dashboard') 
-                    ? 'text-indigo-600 bg-indigo-50' 
+                className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition ${isActive('/dashboard')
+                    ? 'text-indigo-600 bg-indigo-50'
                     : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'
-                }`}
+                  }`}
               >
                 <Home className="w-5 h-5" />
                 <span>Home</span>
@@ -246,8 +244,14 @@ function Navbar({ isLoggedIn, onLogout }) {
                           <>
                             {cart?.slice(0, 3).map((item, index) => (
                               <div key={index} className="flex items-center space-x-3 p-3 border-b hover:bg-gray-50">
-                                <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded" />
-                                <div className="flex-1 min-w-0">
+                                <img
+                                  src={item.image ? `http://localhost:5000${item.image}` : 'https://via.placeholder.com/50?text=Product'}
+                                  alt={item.name}
+                                  className="w-12 h-12 object-cover rounded"
+                                  onError={(e) => {
+                                    e.target.src = 'https://via.placeholder.com/50?text=Product';
+                                  }}
+                                />                                <div className="flex-1 min-w-0">
                                   <p className="text-sm font-medium truncate">{item.name}</p>
                                   <p className="text-xs text-gray-500">Qty: {item.quantity || 1}</p>
                                 </div>
@@ -323,6 +327,7 @@ function Navbar({ isLoggedIn, onLogout }) {
                           <User className="w-4 h-4" />
                           <span>Profile</span>
                         </Link>
+                        
                         <Link
                           to="/orders"
                           onClick={() => setIsProfileOpen(false)}
@@ -367,9 +372,8 @@ function Navbar({ isLoggedIn, onLogout }) {
         </div>
 
         {/* Mobile Menu */}
-        <div className={`lg:hidden absolute left-0 right-0 bg-white shadow-xl transition-all duration-300 overflow-hidden ${
-          isMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
-        }`}>
+        <div className={`lg:hidden absolute left-0 right-0 bg-white shadow-xl transition-all duration-300 overflow-hidden ${isMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+          }`}>
           <div className="p-4 space-y-4">
             {/* Mobile Search */}
             <form onSubmit={handleSearch} className="relative">
@@ -387,9 +391,8 @@ function Navbar({ isLoggedIn, onLogout }) {
             <Link
               to="/dashboard"
               onClick={() => setIsMenuOpen(false)}
-              className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${
-                isActive('/dashboard') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'
-              }`}
+              className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${isActive('/dashboard') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'
+                }`}
             >
               <Home className="w-5 h-5" />
               <span>Home</span>
