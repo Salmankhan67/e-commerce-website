@@ -7,7 +7,7 @@ import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Navbar from './Components/Navbar';
 import AdminDashboard from './pages/AdminDashboard';
-import "./app.css";
+import "./App.css";
 
 // Check if user is logged in
 const isLoggedIn = () => {
