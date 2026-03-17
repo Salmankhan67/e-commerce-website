@@ -18,9 +18,11 @@ app.use('/api/products', require('./routes/Products'));
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/promo', require('./routes/promo'));
 app.use('/api/upload', require('./routes/upload'));
+
 const dns = require("node:dns/promises");
 dns.setServers(["1.1.1.1", "8.8.8.8", "8.8.4.4"]);
 
+// ===== CONNECT TO MONGODB =====
 mongoose
   .connect(process.env.MONGO_URL)
   .then(async () => {
@@ -37,10 +39,13 @@ mongoose
       ]);
     }
 
-    const port = process.env.PORT || 5000;
-    app.listen(port, () => {
-      console.log(`Server running on port ${port}`);
-    });
+    // ✅ For local development - keep the server listening
+    if (process.env.NODE_ENV !== 'production') {
+      const port = process.env.PORT || 5000;
+      app.listen(port, () => {
+        console.log(`Server running on port ${port}`);
+      });
+    }
   })
   .catch((err) => {
     console.error("MongoDB connection failed:", err.message);
@@ -50,3 +55,6 @@ mongoose
 app.get("/", (req, res) => {
   res.send("Backend is working!");
 });
+
+// ✅ EXPORT for Vercel (MUST be at the very bottom)
+module.exports = app;
