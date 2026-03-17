@@ -2,6 +2,8 @@ import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { API } from '../config';
+// Add this line with your other imports
+import { API_BASE_URL } from '../config';
 import {
   ShoppingCart,
   Trash2,
