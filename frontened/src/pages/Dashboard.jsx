@@ -1,6 +1,7 @@
 import { useCart } from '../context/CartContext';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API } from '../config';
 import {
   ShoppingBag,
   Search,
@@ -92,7 +93,7 @@ function Dashboard() {
       return;
     }
 
-    fetch('http://localhost:5000/api/products', {
+    fetch(API.products, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -353,7 +354,7 @@ function Dashboard() {
                               {/* // Display product image with fallback */}
 
                               <img
-                                src={item.image ? `http://localhost:5000${item.image}` : 'https://via.placeholder.com/50?text=Product'}
+                                src={item.image ? `${API_BASE_URL}${item.image}` : 'https://via.placeholder.com/50?text=Product'}
                                 alt={item.name}
                                 className="w-12 h-12 object-cover rounded"
                                 onError={(e) => {
@@ -569,7 +570,7 @@ function Dashboard() {
                       {/* //images// */}
 
                       <img
-                        src={product.image ? `http://localhost:5000${product.image}` : 'https://via.placeholder.com/300?text=Product'}
+                        src={product.image ? `${API_BASE_URL}${product.image}` : 'https://via.placeholder.com/300?text=Product'}
                         alt={product.name}
                         className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
                         onError={(e) => {
@@ -640,7 +641,7 @@ function Dashboard() {
                       {/* //IMAGES// */}
 
                       <img
-                        src={product.image ? `http://localhost:5000${product.image}` : 'https://via.placeholder.com/300?text=Product'}
+                        src={product.image ? `${API_BASE_URL}${product.image}` : 'https://via.placeholder.com/300?text=Product'}
                         alt={product.name}
                         className="w-full md:w-32 h-32 object-cover rounded-xl"
                         onError={(e) => {

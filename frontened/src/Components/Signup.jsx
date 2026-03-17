@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import GoogleLogin from '../Components/GoogleLogin';
 import './Auth.css';
-
+import { API } from '../config';
 function Signup() {
   const navigate = useNavigate();
   const [user, setUser] = useState({
@@ -32,7 +32,7 @@ function Signup() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/signup", {
+      const response = await fetch(`${API.auth}/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

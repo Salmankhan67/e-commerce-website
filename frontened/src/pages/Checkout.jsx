@@ -1,6 +1,7 @@
 import { useCart } from '../context/CartContext';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API } from '../config';
 import {
   CreditCard,
   Wallet,
@@ -248,7 +249,7 @@ function Checkout() {
       console.log('Validating promo:', promoCode); // Debug
       console.log('Subtotal:', subtotal); // Debug
 
-      const response = await fetch('http://localhost:5000/api/promo/validate', {
+      const response = await fetch(`${API.promo}/validate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -387,7 +388,7 @@ function Checkout() {
   console.log('🚀 Sending order data:', orderData); // Debug log
 
   try {
-    const response = await fetch('http://localhost:5000/api/orders', {
+    const response = await fetch(API.orders, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

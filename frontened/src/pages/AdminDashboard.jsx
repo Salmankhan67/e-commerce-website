@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { API } from '../config';
 import {
   LayoutDashboard,
   Package,
@@ -171,7 +172,7 @@ function AdminDashboard() {
 
   const fetchProducts = async () => {
     try {
-      const data = await fetchWithError("http://localhost:5000/api/products", {
+      const data = await fetchWithError(`${API.products}`, {
         headers: getAuthHeader(),
       });
       setProducts(Array.isArray(data) ? data : []);
@@ -183,7 +184,7 @@ function AdminDashboard() {
 
   const fetchOrders = async () => {
     try {
-      const data = await fetchWithError("http://localhost:5000/api/orders", {
+      const data = await fetchWithError(`${API.orders}`, {
         headers: getAuthHeader(),
       });
       setOrders(Array.isArray(data) ? data : []);
@@ -195,7 +196,7 @@ function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const data = await fetchWithError("http://localhost:5000/api/users", {
+      const data = await fetchWithError(`${API.users}`, {
         headers: getAuthHeader(),
       });
       setUsers(Array.isArray(data) ? data : []);
@@ -207,7 +208,7 @@ function AdminDashboard() {
 
   const fetchCategories = async () => {
     try {
-      const data = await fetchWithError("http://localhost:5000/api/categories", {
+      const data = await fetchWithError(`${API.categories}`, {
         headers: getAuthHeader(),
       });
       setCategories(Array.isArray(data) ? data : []);
@@ -219,7 +220,7 @@ function AdminDashboard() {
 
   const fetchPromoCodes = async () => { // UPDATED with error handling
     try {
-      const data = await fetchWithError("http://localhost:5000/api/promo", {
+      const data = await fetchWithError(`${API.promo}`, {
         headers: getAuthHeader(),
       });
       setPromoCodes(Array.isArray(data) ? data : []);
@@ -231,7 +232,7 @@ function AdminDashboard() {
 
   const fetchReviews = async () => {
     try {
-      const data = await fetchWithError("http://localhost:5000/api/reviews", {
+      const data = await fetchWithError(`${API.reviews}`, {
         headers: getAuthHeader(),
       });
       setReviews(Array.isArray(data) ? data : []);
@@ -245,7 +246,7 @@ function AdminDashboard() {
   const addProduct = async (e) => {
     e.preventDefault();
     try {
-      await fetchWithError("http://localhost:5000/api/products", {
+      await fetchWithError(`${API.products}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -266,7 +267,7 @@ function AdminDashboard() {
   const addCategory = async (e) => {
     e.preventDefault();
     try {
-      await fetchWithError("http://localhost:5000/api/categories", {
+      await fetchWithError(`${API.categories}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -310,7 +311,7 @@ function AdminDashboard() {
         isActive: newPromo.isActive
       };
 
-      await fetchWithError("http://localhost:5000/api/promo", {
+      await fetchWithError(`${API.promo}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -331,7 +332,7 @@ function AdminDashboard() {
 
   const updateProduct = async (id, updates) => {
     try {
-      await fetchWithError(`http://localhost:5000/api/products/${id}`, {
+      await fetchWithError(`${API.products}/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -351,7 +352,7 @@ function AdminDashboard() {
   const deleteItem = async (endpoint, id) => { // UPDATED with error handling
     if (!window.confirm("Are you sure you want to delete this item?")) return;
     try {
-      await fetchWithError(`http://localhost:5000/api/${endpoint}/${id}`, {
+      await fetchWithError(`${API_BASE_URL}/api/${endpoint}/${id}`, {
         method: "DELETE",
         headers: getAuthHeader(),
       });
@@ -368,7 +369,7 @@ function AdminDashboard() {
 
   const updateOrderStatus = async (id, status) => { // UPDATED with error handling
     try {
-      await fetchWithError(`http://localhost:5000/api/orders/${id}`, {
+      await fetchWithError(`${API_BASE_URL}/api/orders/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -387,7 +388,7 @@ function AdminDashboard() {
   const togglePromoStatus = async (id, currentStatus) => { // UPDATED with proper endpoint
     try {
       const token = getToken();
-      await fetchWithError(`http://localhost:5000/api/promo/${id}/toggle`, {
+      await fetchWithError(`${API_BASE_URL}/api/promo/${id}/toggle`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -936,7 +937,7 @@ function AdminDashboard() {
                     <div key={product._id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition">
                       <div className="relative h-48">
                         <img
-                          src={product.image ? `http://localhost:5000${product.image}` : 'https://via.placeholder.com/300?text=Product'}
+                          src={product.image ? `${API_BASE_URL}${product.image}` : 'https://via.placeholder.com/300?text=Product'}
                           alt={product.name}
                           className="w-50 h-48 object-cover hover:scale-105 transition-transform"
                           onError={(e) => {
@@ -1027,7 +1028,7 @@ function AdminDashboard() {
                             <div className="flex items-center space-x-3">
 
                               <img
-                                src={product.image ? `http://localhost:5000${product.image}` : 'https://via.placeholder.com/40?text=Product'}
+                                src={product.image ? `${API_BASE_URL}${product.image}` : 'https://via.placeholder.com/40?text=Product'}
                                 alt={product.name}
                                 className="w-10 h-10 object-cover rounded"
                                 onError={(e) => {
@@ -1667,7 +1668,7 @@ function AdminDashboard() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Min Order Value (₹)
+                    Min Order Value (Rs.)
                   </label>
                   <input
                     type="number"

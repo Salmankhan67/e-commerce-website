@@ -1,6 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useState, useEffect, useRef } from 'react';
+import { API } from '../config';
 import {
   ShoppingCart,
   User,
@@ -245,7 +246,7 @@ function Navbar({ isLoggedIn, onLogout }) {
                             {cart?.slice(0, 3).map((item, index) => (
                               <div key={index} className="flex items-center space-x-3 p-3 border-b hover:bg-gray-50">
                                 <img
-                                  src={item.image ? `http://localhost:5000${item.image}` : 'https://via.placeholder.com/50?text=Product'}
+                                  src={item.image ? `${API_BASE_URL}${item.image}` : 'https://via.placeholder.com/50?text=Product'}
                                   alt={item.name}
                                   className="w-12 h-12 object-cover rounded"
                                   onError={(e) => {
@@ -269,7 +270,7 @@ function Navbar({ isLoggedIn, onLogout }) {
                       <div className="p-4 border-t bg-gray-50">
                         <div className="flex justify-between mb-3">
                           <span className="font-medium">Total:</span>
-                          <span className="font-bold text-indigo-600">₹{getCartTotal().toLocaleString()}</span>
+                          <span className="font-bold text-indigo-600">Rs.{getCartTotal().toLocaleString()}</span>
                         </div>
                         <Link
                           to="/cart"

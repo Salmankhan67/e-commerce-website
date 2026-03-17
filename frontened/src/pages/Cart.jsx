@@ -1,6 +1,7 @@
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { API } from '../config';
 import {
   ShoppingCart,
   Trash2,
@@ -46,7 +47,7 @@ function Cart() {
         return;
       }
 
-      const response = await fetch('http://localhost:5000/api/promo/validate', {
+      const response = await fetch(`${API.promo}/validate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -231,7 +232,7 @@ function Cart() {
                       {/* Product Info */}
                       <div className="md:col-span-6 flex items-center space-x-4 w-full">
                         <img
-                          src={item.image ? `http://localhost:5000${item.image}` : 'https://via.placeholder.com/80?text=Product'}
+                          src={item.image ? `${API_BASE_URL}${item.image}` : 'https://via.placeholder.com/80?text=Product'}
                           alt={item.name}
                           className="w-20 h-20 object-cover rounded-lg"
                           onError={(e) => {

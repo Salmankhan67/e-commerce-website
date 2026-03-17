@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Upload, X } from 'lucide-react';
-
+import { API } from '../config';
 function ImageUpload({ onImageUploaded, existingImage }) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(
-    existingImage ? `http://localhost:5000${existingImage}` : null
+    existingImage ? `${API_BASE_URL}${existingImage}` : null
   );
   const [error, setError] = useState('');
 
@@ -38,7 +38,7 @@ function ImageUpload({ onImageUploaded, existingImage }) {
       const auth = JSON.parse(localStorage.getItem('auth'));
       const token = auth?.token;
 
-      const response = await fetch('http://localhost:5000/api/upload', {
+      const response = await fetch(API.upload, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

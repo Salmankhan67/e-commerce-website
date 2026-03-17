@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import GoogleLogin from '../Components/GoogleLogin'; 
 import './Auth.css';
-
+import { API } from '../config';
 function SignIn() {
   const navigate = useNavigate();
 
@@ -28,7 +28,7 @@ function SignIn() {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(`${API.auth}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
