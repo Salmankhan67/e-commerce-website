@@ -64,6 +64,7 @@ function AdminDashboard() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [dateRange, setDateRange] = useState("today");
   const [viewMode, setViewMode] = useState("grid");
+  const [searchExpanded, setSearchExpanded] = useState(false);
 
   // Modal States
   const [showAddProductModal, setShowAddProductModal] = useState(false);
@@ -510,60 +511,105 @@ function AdminDashboard() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* ========== MOBILE HEADER ========== */}
-      <div className="lg:hidden bg-white shadow-md p-4 flex items-center justify-between sticky top-0 z-20">
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 hover:bg-gray-100 rounded-lg"
-        >
-          <Menu className="w-6 h-6" />
-        </button>
-        <h1 className="text-xl font-bold text-indigo-600">StoreFlow</h1>
-        <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold">
-          A
-        </div>
-      </div>
-
-      {/* ========== MOBILE SIDEBAR OVERLAY ========== */}
-      {mobileMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
-
-      {/* ========== MOBILE SIDEBAR ========== */}
-      <div className={`fixed top-0 left-0 h-full w-64 bg-white shadow-xl z-40 transform transition-transform lg:hidden ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="p-4 border-b flex justify-between items-center">
-          <h2 className="text-xl font-bold text-indigo-600">Menu</h2>
-          <button onClick={() => setMobileMenuOpen(false)} className="p-1 hover:bg-gray-100 rounded">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-        <nav className="p-4">
-          {navigation.map((item) => (
+      {/* ========== MOBILE HEADER (PROFESSIONAL) ========== */}
+      <div className="lg:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
             <button
-              key={item.id}
-              onClick={() => {
-                setActiveTab(item.id);
-                setMobileMenuOpen(false);
-              }}
-              className={`w-full flex items-center px-4 py-3 rounded-lg mb-1 ${activeTab === item.id ? 'bg-indigo-600 text-white' : 'hover:bg-gray-100'
-                }`}
+              onClick={() => setMobileMenuOpen(true)}
+              className="p-2.5 -ml-1 hover:bg-gray-100 rounded-full transition min-h-[44px] min-w-[44px] flex items-center justify-center"
+              title="Open menu"
             >
-              <item.icon className="w-5 h-5 mr-3" />
-              {item.name}
+              <Menu className="w-6 h-6 text-gray-700" />
             </button>
-          ))}
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg mt-4"
-          >
-            <LogOut className="w-5 h-5 mr-3" />
-            Logout
-          </button>
-        </nav>
+            <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              StoreFlow
+            </h1>
+          </div>
+
+          <div className="flex items-center space-x-1">
+            <button
+              onClick={() => setSearchExpanded(!searchExpanded)}
+              className="p-2.5 hover:bg-gray-100 rounded-full min-h-[44px] min-w-[44px] flex items-center justify-center"
+              title="Search"
+            >
+              <Search className="w-5 h-5 text-gray-600" />
+            </button>
+
+            <button className="p-2.5 hover:bg-gray-100 rounded-full relative min-h-[44px] min-w-[44px] flex items-center justify-center" title="Notifications">
+              <Bell className="w-5 h-5 text-gray-600" />
+              {pendingOrders > 0 && (
+                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+              )}
+            </button>
+
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold shadow-sm">
+              A
+            </div>
+          </div>
+        </div>
+
+        <div className={`mt-3 overflow-hidden transition-all duration-200 ${searchExpanded ? 'max-h-16 opacity-100' : 'max-h-0 opacity-0'}`}>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Search products, orders..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+              autoFocus={searchExpanded}
+            />
+          </div>
+        </div>
       </div>
+
+      {/* ========== MOBILE SIDEBAR OVERLAY & DRAWER ========== */}
+      {mobileMenuOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 lg:hidden transition-opacity"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div className="fixed top-0 left-0 h-full w-72 bg-white shadow-2xl z-40 transform transition-transform lg:hidden rounded-r-2xl">
+            <div className="p-4 border-b flex justify-between items-center">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">StoreFlow</h2>
+              <button onClick={() => setMobileMenuOpen(false)} className="p-2.5 hover:bg-gray-100 rounded-full min-h-[44px] min-w-[44px] flex items-center justify-center" title="Close menu">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <nav className="p-4 space-y-1 space-y-1">
+              {navigation.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setActiveTab(item.id);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center px-4 py-3 rounded-xl transition min-h-[44px] ${activeTab === item.id ? 'bg-indigo-50 text-indigo-600 font-medium' : 'hover:bg-gray-50 text-gray-700'
+                    }`}
+                >
+                  <item.icon className="w-5 h-5 mr-3" />
+                  <span className="flex-1 text-left">{item.name}</span>
+                  {item.count !== null && item.count > 0 && (
+                    <span className="bg-gray-200 text-gray-600 text-xs px-2 py-1 rounded-full">
+                      {item.count}
+                    </span>
+                  )}
+                </button>
+              ))}
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl mt-4 transition min-h-[44px]"
+                title="Logout"
+              >
+                <LogOut className="w-5 h-5 mr-3" />
+                Logout
+              </button>
+            </nav>
+          </div>
+        </>
+      )}
 
       {/* ========== DESKTOP SIDEBAR ========== */}
       <div className={`hidden lg:block ${sidebarOpen ? 'w-64' : 'w-20'} bg-white shadow-lg transition-all duration-300 relative`}>
@@ -575,21 +621,22 @@ function AdminDashboard() {
           )}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-1 hover:bg-gray-100 rounded-lg"
+            className="p-2 hover:bg-gray-100 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
             <Menu className="w-5 h-5 text-gray-600" />
           </button>
         </div>
 
-        <nav className="flex-1 p-4 overflow-y-auto">
-          {navigation.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center ${sidebarOpen ? 'px-4' : 'px-2 justify-center'} py-3 rounded-lg mb-1 transition-colors relative ${activeTab === item.id
-                ? "bg-indigo-50 text-indigo-600"
-                : "text-gray-600 hover:bg-gray-50"
-                }`}
+<nav className="p-4 space-y-1">
+              {navigation.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`w-full flex items-center ${sidebarOpen ? 'px-4' : 'px-2 justify-center'} py-3 rounded-lg transition-colors relative min-h-[44px] ${activeTab === item.id
+                    ? "bg-indigo-50 text-indigo-600"
+                    : "text-gray-600 hover:bg-gray-50"
+                    }`}
+                  title={!sidebarOpen ? item.name : ''}
             >
               <item.icon className="w-5 h-5" />
               {sidebarOpen && (
@@ -609,7 +656,8 @@ function AdminDashboard() {
         <div className="p-4 border-t">
           <button
             onClick={handleLogout}
-            className={`hidden lg:flex items-center ${sidebarOpen ? 'px-4' : 'px-2 justify-center'} py-3 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg w-full transition-colors group`}
+            className={`hidden lg:flex items-center ${sidebarOpen ? 'px-4' : 'px-2 justify-center'} py-3 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg w-full transition-colors group min-h-[44px]`}
+            title="Logout"
           >
             <LogOut className="w-5 h-5 group-hover:text-red-600" />
             {sidebarOpen && (
@@ -620,7 +668,7 @@ function AdminDashboard() {
       </div>
 
       {/* ========== MAIN CONTENT ========== */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto pb-20 sm:pb-24 md:pb-16 lg:pb-0">
         {/* Desktop Header */}
         <header className="hidden lg:block bg-white shadow-sm sticky top-0 z-10">
           <div className="flex items-center justify-between px-6 py-4">
@@ -676,32 +724,18 @@ function AdminDashboard() {
           </div>
         </header>
 
-        {/* Mobile Search Bar */}
-        <div className="lg:hidden p-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-        </div>
-
         {/* ========== DASHBOARD CONTENT ========== */}
         <div className="p-4 sm:p-6">
           {/* DASHBOARD TAB */}
           {activeTab === "dashboard" && (
             <>
-              {/* Stats Grid - Horizontal scroll on mobile */}
-              <div className="flex overflow-x-auto space-x-4 pb-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:space-x-0 md:gap-6 mb-8">
-                <div className="min-w-[280px] md:min-w-0 bg-white rounded-xl shadow-sm p-4 sm:p-6 hover:shadow-md transition flex-shrink-0">
+              {/* Stats Grid - Horizontal scroll on mobile with snap */}
+              <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-6 mb-8 md:space-x-0">
+                <div className="min-w-[calc(100vw-2rem)] xs:min-w-[calc(50vw-2rem)] sm:min-w-[calc(50vw-3rem)] md:min-w-0 snap-start bg-white rounded-2xl shadow-sm p-4 sm:p-5 border border-gray-100">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs sm:text-sm text-gray-500 mb-1">Total Revenue</p>
-                      <p className="text-xl sm:text-2xl font-bold text-gray-800">Rs.{totalRevenue.toLocaleString()}</p>
+                      <p className="text-xs sm:text-sm md:text-xs lg:text-sm text-gray-500 mb-1">Total Revenue</p>
+                      <p className="text-lg sm:text-2xl md:text-lg lg:text-2xl font-bold text-gray-800">Rs.{totalRevenue.toLocaleString()}</p>
                       <p className="text-xs text-green-500 mt-2">↑ 12.5%</p>
                     </div>
                     <div className="bg-green-500 p-2 sm:p-3 rounded-lg">
@@ -710,11 +744,11 @@ function AdminDashboard() {
                   </div>
                 </div>
 
-                <div className="min-w-[280px] md:min-w-0 bg-white rounded-xl shadow-sm p-4 sm:p-6 hover:shadow-md transition flex-shrink-0">
+                <div className="min-w-[calc(100vw-2rem)] xs:min-w-[calc(50vw-2rem)] sm:min-w-[calc(50vw-3rem)] md:min-w-0 snap-start bg-white rounded-2xl shadow-sm p-4 sm:p-5 border border-gray-100">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs sm:text-sm text-gray-500 mb-1">Total Orders</p>
-                      <p className="text-xl sm:text-2xl font-bold text-gray-800">{totalOrders}</p>
+                      <p className="text-xs sm:text-sm md:text-xs lg:text-sm text-gray-500 mb-1">Total Orders</p>
+                      <p className="text-lg sm:text-2xl md:text-lg lg:text-2xl font-bold text-gray-800">{totalOrders}</p>
                       <p className="text-xs text-gray-500 mt-2">{pendingOrders} pending</p>
                     </div>
                     <div className="bg-purple-500 p-2 sm:p-3 rounded-lg">
@@ -723,11 +757,11 @@ function AdminDashboard() {
                   </div>
                 </div>
 
-                <div className="min-w-[280px] md:min-w-0 bg-white rounded-xl shadow-sm p-4 sm:p-6 hover:shadow-md transition flex-shrink-0">
+                <div className="min-w-[calc(100vw-2rem)] xs:min-w-[calc(50vw-2rem)] sm:min-w-[calc(50vw-3rem)] md:min-w-0 snap-start bg-white rounded-2xl shadow-sm p-4 sm:p-5 border border-gray-100">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs sm:text-sm text-gray-500 mb-1">Total Customers</p>
-                      <p className="text-xl sm:text-2xl font-bold text-gray-800">{totalUsers}</p>
+                      <p className="text-xs sm:text-sm md:text-xs lg:text-sm text-gray-500 mb-1">Total Customers</p>
+                      <p className="text-lg sm:text-2xl md:text-lg lg:text-2xl font-bold text-gray-800">{totalUsers}</p>
                       <p className="text-xs text-gray-500 mt-2">{users.filter(u => u.role === 'user').length} active</p>
                     </div>
                     <div className="bg-blue-500 p-2 sm:p-3 rounded-lg">
@@ -736,11 +770,11 @@ function AdminDashboard() {
                   </div>
                 </div>
 
-                <div className="min-w-[280px] md:min-w-0 bg-white rounded-xl shadow-sm p-4 sm:p-6 hover:shadow-md transition flex-shrink-0">
+                <div className="min-w-[calc(100vw-2rem)] xs:min-w-[calc(50vw-2rem)] sm:min-w-[calc(50vw-3rem)] md:min-w-0 snap-start bg-white rounded-2xl shadow-sm p-4 sm:p-5 border border-gray-100">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs sm:text-sm text-gray-500 mb-1">Products</p>
-                      <p className="text-xl sm:text-2xl font-bold text-gray-800">{totalProducts}</p>
+                      <p className="text-xs sm:text-sm md:text-xs lg:text-sm text-gray-500 mb-1">Products</p>
+                      <p className="text-lg sm:text-2xl md:text-lg lg:text-2xl font-bold text-gray-800">{totalProducts}</p>
                       <p className="text-xs text-gray-500 mt-2">{products.filter(p => p.stock < 10).length} low stock</p>
                     </div>
                     <div className="bg-indigo-500 p-2 sm:p-3 rounded-lg">
@@ -750,9 +784,9 @@ function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Second Row Stats - Horizontal scroll on mobile */}
-              <div className="flex overflow-x-auto space-x-4 pb-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:space-x-0 md:gap-6 mb-8">
-                <div className="min-w-[200px] md:min-w-0 bg-white rounded-xl shadow-sm p-4 flex-shrink-0">
+              {/* Second Row Stats */}
+              <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-6 mb-8 md:space-x-0">
+                <div className="min-w-[calc(100vw-2rem)] xs:min-w-[calc(50vw-2rem)] sm:min-w-[calc(50vw-3rem)] md:min-w-0 snap-start bg-white rounded-2xl shadow-sm p-4 sm:p-5 border border-gray-100">
                   <div className="flex items-center space-x-3">
                     <div className="bg-yellow-100 p-2 sm:p-3 rounded-lg">
                       <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-600" />
@@ -764,10 +798,10 @@ function AdminDashboard() {
                   </div>
                 </div>
 
-                <div className="min-w-[200px] md:min-w-0 bg-white rounded-xl shadow-sm p-4 flex-shrink-0">
+                <div className="min-w-[calc(100vw-2rem)] xs:min-w-[calc(50vw-2rem)] sm:min-w-[calc(50vw-3rem)] md:min-w-0 snap-start bg-white rounded-2xl shadow-sm p-4 sm:p-5 border border-gray-100">
                   <div className="flex items-center space-x-3">
                     <div className="bg-blue-100 p-2 sm:p-3 rounded-lg">
-                      <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+                      <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600" />
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">Processing</p>
@@ -776,10 +810,10 @@ function AdminDashboard() {
                   </div>
                 </div>
 
-                <div className="min-w-[200px] md:min-w-0 bg-white rounded-xl shadow-sm p-4 flex-shrink-0">
+                <div className="min-w-[calc(100vw-2rem)] xs:min-w-[calc(50vw-2rem)] sm:min-w-[calc(50vw-3rem)] md:min-w-0 snap-start bg-white rounded-2xl shadow-sm p-4 sm:p-5 border border-gray-100">
                   <div className="flex items-center space-x-3">
                     <div className="bg-purple-100 p-2 sm:p-3 rounded-lg">
-                      <Truck className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
+                      <Truck className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-purple-600" />
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">Shipped</p>
@@ -788,10 +822,10 @@ function AdminDashboard() {
                   </div>
                 </div>
 
-                <div className="min-w-[200px] md:min-w-0 bg-white rounded-xl shadow-sm p-4 flex-shrink-0">
+                <div className="min-w-[calc(100vw-2rem)] xs:min-w-[calc(50vw-2rem)] sm:min-w-[calc(50vw-3rem)] md:min-w-0 snap-start bg-white rounded-2xl shadow-sm p-4 sm:p-5 border border-gray-100">
                   <div className="flex items-center space-x-3">
                     <div className="bg-green-100 p-2 sm:p-3 rounded-lg">
-                      <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
+                      <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-600" />
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">Delivered</p>
@@ -803,7 +837,7 @@ function AdminDashboard() {
 
               {/* Charts and Tables */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
-                <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-4 sm:p-6">
+                <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm p-4 sm:p-6 border border-gray-100">
                   <h3 className="text-base sm:text-lg font-semibold mb-4">Revenue Overview</h3>
                   <div className="h-48 sm:h-64 flex items-center justify-center bg-gray-50 rounded-lg">
                     <BarChart className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400" />
@@ -811,7 +845,7 @@ function AdminDashboard() {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
+                <div className="bg-white rounded-2xl shadow-sm p-4 sm:p-6 border border-gray-100">
                   <h3 className="text-base sm:text-lg font-semibold mb-4">Key Metrics</h3>
                   <div className="space-y-4">
                     <div>
@@ -840,8 +874,8 @@ function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Recent Orders - Scrollable on mobile */}
-              <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
+              {/* Recent Orders */}
+              <div className="bg-white rounded-2xl shadow-sm p-4 sm:p-6 border border-gray-100">
                 <h3 className="text-base sm:text-lg font-semibold mb-4">Recent Orders</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
@@ -896,7 +930,7 @@ function AdminDashboard() {
                 </div>
                 <button
                   onClick={() => setShowAddProductModal(true)}
-                  className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition w-full sm:w-auto justify-center text-sm sm:text-base"
+                  className="flex items-center px-4 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition w-full sm:w-auto justify-center text-sm sm:text-base"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Product
@@ -906,7 +940,7 @@ function AdminDashboard() {
               {viewMode === 'grid' ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                   {filteredProducts.map((product) => (
-                    <div key={product._id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition">
+                    <div key={product._id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition border border-gray-100">
                       <div className="relative h-40 sm:h-48">
                         <img
                           src={product.image ? `${API_BASE_URL}${product.image}` : 'https://via.placeholder.com/300?text=Product'}
@@ -984,7 +1018,7 @@ function AdminDashboard() {
                   ))}
                 </div>
               ) : (
-                <div className="bg-white rounded-xl shadow-sm overflow-hidden overflow-x-auto">
+                <div className="bg-white rounded-xl shadow-sm overflow-hidden overflow-x-auto border border-gray-100">
                   <table className="w-full min-w-[800px]">
                     <thead className="bg-gray-50">
                       <tr>
@@ -1025,13 +1059,13 @@ function AdminDashboard() {
                           <td className="px-6 py-4">{product.taxRate || 18}%</td>
                           <td className="px-6 py-4">
                             <div className="flex space-x-2">
-                              <button 
+                              <button
                                 onClick={() => setShowEditModal(product)}
                                 className="text-blue-600 hover:text-blue-800"
                               >
                                 Edit
                               </button>
-                              <button 
+                              <button
                                 onClick={() => setShowDeleteConfirm({ type: 'products', id: product._id })}
                                 className="text-red-600 hover:text-red-800"
                               >
@@ -1048,7 +1082,7 @@ function AdminDashboard() {
             </>
           )}
 
-          {/* ORDERS TAB */}
+          {/* ORDERS TAB (with mobile card view) */}
           {activeTab === "orders" && (
             <>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
@@ -1057,7 +1091,7 @@ function AdminDashboard() {
                   <select
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
-                    className="w-full sm:w-auto px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full sm:w-auto px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
                   >
                     <option value="all">All Status</option>
                     <option value="pending">Pending</option>
@@ -1066,14 +1100,64 @@ function AdminDashboard() {
                     <option value="delivered">Delivered</option>
                     <option value="cancelled">Cancelled</option>
                   </select>
-                  <button className="w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center justify-center">
+                  <button className="w-full sm:w-auto px-4 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 flex items-center justify-center">
                     <Download className="w-4 h-4 mr-2" />
                     Export
                   </button>
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl shadow-sm overflow-hidden overflow-x-auto">
+              {/* Mobile Card View */}
+              <div className="lg:hidden space-y-3">
+                {filteredOrders.map((order) => (
+                  <div key={order._id} className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <p className="font-medium text-gray-800">#{order._id?.slice(-8)}</p>
+                        <p className="text-sm text-gray-500">{order.userId?.name}</p>
+                      </div>
+                      <span className={`inline-flex items-center px-2.5 py-1.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                        {getStatusIcon(order.status)}
+                        <span className="ml-1">{order.status}</span>
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 mt-3 text-sm">
+                      <div>
+                        <p className="text-gray-500 text-xs">Items</p>
+                        <p className="font-medium">{order.items?.length}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500 text-xs">Total</p>
+                        <p className="font-medium text-indigo-600">Rs.{order.total}</p>
+                      </div>
+                      <div className="col-span-2 mt-2">
+                        <select
+                          value={order.status}
+                          onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+                          className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm"
+                        >
+                          <option>Pending</option>
+                          <option>Processing</option>
+                          <option>Shipped</option>
+                          <option>Delivered</option>
+                          <option>Cancelled</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => setShowOrderDetails(order)}
+                      className="mt-3 w-full py-2 text-indigo-600 text-sm font-medium border border-indigo-200 rounded-lg hover:bg-indigo-50"
+                    >
+                      View Details
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden lg:block bg-white rounded-xl shadow-sm overflow-hidden overflow-x-auto border border-gray-100">
                 <div className="min-w-[1000px]">
                   <table className="w-full">
                     <thead className="bg-gray-50">
@@ -1155,7 +1239,7 @@ function AdminDashboard() {
                 <h3 className="text-lg font-semibold text-gray-800">Manage Categories</h3>
                 <button
                   onClick={() => setShowAddCategoryModal(true)}
-                  className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 w-full sm:w-auto justify-center"
+                  className="flex items-center px-4 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 w-full sm:w-auto justify-center"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Category
@@ -1164,7 +1248,7 @@ function AdminDashboard() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {categories.map((category) => (
-                  <div key={category._id} className="bg-white rounded-xl shadow-sm p-4 sm:p-6 hover:shadow-md transition">
+                  <div key={category._id} className="bg-white rounded-xl shadow-sm p-4 sm:p-6 hover:shadow-md transition border border-gray-100">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center text-xl">
@@ -1185,13 +1269,13 @@ function AdminDashboard() {
                     </div>
                     <p className="text-sm text-gray-600 mb-4">{category.description}</p>
                     <div className="flex items-center justify-between">
-                      <button 
+                      <button
                         onClick={() => setShowEditModal(category)}
                         className="text-blue-600 hover:text-blue-800 text-sm"
                       >
                         Edit
                       </button>
-                      <button 
+                      <button
                         onClick={() => setShowDeleteConfirm({ type: 'categories', id: category._id })}
                         className="text-red-600 hover:text-red-800 text-sm"
                       >
@@ -1211,7 +1295,7 @@ function AdminDashboard() {
                 <h3 className="text-lg font-semibold text-gray-800">Promo Codes</h3>
                 <button
                   onClick={() => setShowAddPromoModal(true)}
-                  className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 w-full sm:w-auto justify-center"
+                  className="flex items-center px-4 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 w-full sm:w-auto justify-center"
                 >
                   <Gift className="w-4 h-4 mr-2" />
                   Create Promo
@@ -1220,7 +1304,7 @@ function AdminDashboard() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {promoCodes.map((promo) => (
-                  <div key={promo._id} className="bg-white rounded-xl shadow-sm p-4 sm:p-6 hover:shadow-md transition">
+                  <div key={promo._id} className="bg-white rounded-xl shadow-sm p-4 sm:p-6 hover:shadow-md transition border border-gray-100">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center space-x-3">
                         <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-2 rounded-lg">
@@ -1263,13 +1347,13 @@ function AdminDashboard() {
                     </div>
 
                     <div className="mt-4 pt-4 border-t flex justify-between">
-                      <button 
+                      <button
                         onClick={() => setShowEditModal(promo)}
                         className="text-blue-600 hover:text-blue-800 text-sm"
                       >
                         Edit
                       </button>
-                      <button 
+                      <button
                         onClick={() => setShowDeleteConfirm({ type: 'promo', id: promo._id })}
                         className="text-red-600 hover:text-red-800 text-sm"
                       >
@@ -1282,11 +1366,48 @@ function AdminDashboard() {
             </>
           )}
 
-          {/* CUSTOMERS TAB */}
+          {/* CUSTOMERS TAB (mobile card view added) */}
           {activeTab === "customers" && (
             <>
               <h3 className="text-lg font-semibold text-gray-800 mb-6">Customers</h3>
-              <div className="bg-white rounded-xl shadow-sm overflow-hidden overflow-x-auto">
+
+              {/* Mobile Card View */}
+              <div className="lg:hidden space-y-3">
+                {users.map((user) => (
+                  <div key={user._id} className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                        <Users className="w-5 h-5 text-indigo-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium">{user.name}</p>
+                        <p className="text-sm text-gray-500">{user.email}</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div>
+                        <p className="text-gray-500 text-xs">Phone</p>
+                        <p>{user.phone || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500 text-xs">Orders</p>
+                        <p className="font-medium">{orders.filter(o => o.userId?._id === user._id).length}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500 text-xs">Joined</p>
+                        <p>{user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500 text-xs">Status</p>
+                        <span className="inline-block px-2 py-0.5 bg-green-100 text-green-800 rounded-full text-xs">Active</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden lg:block bg-white rounded-xl shadow-sm overflow-hidden overflow-x-auto border border-gray-100">
                 <div className="min-w-[800px]">
                   <table className="w-full">
                     <thead className="bg-gray-50">
@@ -1334,79 +1455,103 @@ function AdminDashboard() {
         </div>
       </div>
 
+      {/* ========== MOBILE BOTTOM NAVIGATION ========== */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 px-2 py-2 z-30 pb-2">
+        <div className="flex items-center justify-around">
+          {navigation.slice(0, 5).map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={`flex flex-col items-center py-2.5 px-4 rounded-xl transition min-h-[44px] min-w-[44px] justify-center ${activeTab === item.id ? 'text-indigo-600' : 'text-gray-500'
+                }`}
+            >
+              <item.icon className="w-5 h-5" />
+              <span className="text-[11px] font-medium mt-1 leading-tight">{item.name}</span>
+            </button>
+          ))}
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            className="flex flex-col items-center py-2.5 px-4 rounded-xl text-gray-500 min-h-[44px] min-w-[44px] justify-center"
+          >
+            <Grid className="w-5 h-5" />
+            <span className="text-[11px] font-medium mt-1 leading-tight">More</span>
+          </button>
+        </div>
+      </div>
+
       {/* ========== MODALS ========== */}
 
-      {/* Add Product Modal */}
+      {/* Add Product Modal (Full‑screen on mobile) */}
       {showAddProductModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-auto">
-            <div className="p-4 sm:p-6 border-b flex items-center justify-between sticky top-0 bg-white">
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800">Add New Product</h3>
-              <button
-                onClick={() => setShowAddProductModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-lg"
-              >
-                <X className="w-5 h-5 text-gray-500" />
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end lg:items-center justify-center z-50">
+          <div className="bg-white w-full lg:max-w-2xl lg:rounded-xl max-h-[90vh] overflow-auto rounded-t-2xl lg:rounded-xl animate-slide-up">
+            <div className="sticky top-0 bg-white border-b border-gray-100 px-4 py-3 lg:py-4 flex items-center justify-between">
+              <div className="lg:hidden w-12 h-1.5 bg-gray-300 rounded-full mx-auto absolute left-1/2 -translate-x-1/2 top-2"></div>
+              <h3 className="text-lg font-semibold text-gray-800 mt-2 lg:mt-0">Add New Product</h3>
+              <button onClick={() => setShowAddProductModal(false)} className="p-2.5 hover:bg-gray-100 rounded-full min-h-[44px] min-w-[44px] flex items-center justify-center" title="Close">
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={addProduct} className="p-4 sm:p-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="col-span-1 sm:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
+            <form onSubmit={addProduct} className="p-4 lg:p-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Product Name</label>
                   <input
                     required
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:bg-white transition"
                     value={newProduct.name}
                     onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Price (Rs.)</label>
-                  <input
-                    type="number"
-                    required
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    value={newProduct.price}
-                    onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Price (Rs.)</label>
+                    <input
+                      type="number"
+                      required
+                      className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
+                      value={newProduct.price}
+                      onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Discount (%)</label>
+                    <input
+                      type="number"
+                      className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
+                      value={newProduct.discount}
+                      onChange={(e) => setNewProduct({ ...newProduct, discount: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Stock</label>
+                    <input
+                      type="number"
+                      className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
+                      value={newProduct.stock}
+                      onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Tax Rate (%)</label>
+                    <input
+                      type="number"
+                      className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
+                      value={newProduct.taxRate}
+                      onChange={(e) => setNewProduct({ ...newProduct, taxRate: e.target.value })}
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Discount (%)</label>
-                  <input
-                    type="number"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    value={newProduct.discount}
-                    onChange={(e) => setNewProduct({ ...newProduct, discount: e.target.value })}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Stock</label>
-                  <input
-                    type="number"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    value={newProduct.stock}
-                    onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Tax Rate (%)</label>
-                  <input
-                    type="number"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    value={newProduct.taxRate}
-                    onChange={(e) => setNewProduct({ ...newProduct, taxRate: e.target.value })}
-                  />
-                </div>
-
-                <div className="col-span-1 sm:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
                   <select
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
                     value={newProduct.category}
                     onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
                   >
@@ -1417,26 +1562,26 @@ function AdminDashboard() {
                   </select>
                 </div>
 
-                <div className="col-span-1 sm:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Product Image</label>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Product Image</label>
                   <ImageUpload
                     onImageUploaded={(url) => setNewProduct({ ...newProduct, image: url })}
                     existingImage={newProduct.image}
                   />
                 </div>
 
-                <div className="col-span-1 sm:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
                   <textarea
                     required
                     rows="3"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
                     value={newProduct.description}
                     onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
                   />
                 </div>
 
-                <div className="col-span-1 sm:col-span-2">
+                <div>
                   <label className="flex items-center space-x-2">
                     <input
                       type="checkbox"
@@ -1449,18 +1594,8 @@ function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="mt-6 flex items-center justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setShowAddProductModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                >
+              <div className="sticky bottom-0 bg-white pt-4 mt-6 border-t border-gray-100 -mx-4 px-4 lg:mx-0 lg:px-0 lg:border-t-0">
+                <button type="submit" className="w-full py-3.5 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700">
                   Add Product
                 </button>
               </div>
@@ -1471,54 +1606,48 @@ function AdminDashboard() {
 
       {/* Add Category Modal */}
       {showAddCategoryModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
-            <div className="p-4 sm:p-6 border-b flex items-center justify-between">
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800">Add New Category</h3>
-              <button
-                onClick={() => setShowAddCategoryModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-lg"
-              >
-                <X className="w-5 h-5 text-gray-500" />
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end lg:items-center justify-center z-50">
+          <div className="bg-white w-full lg:max-w-md lg:rounded-xl max-h-[90vh] overflow-auto rounded-t-2xl lg:rounded-xl">
+            <div className="sticky top-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Add New Category</h3>
+              <button onClick={() => setShowAddCategoryModal(false)} className="p-2.5 hover:bg-gray-100 rounded-full min-h-[44px] min-w-[44px] flex items-center justify-center" title="Close">
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={addCategory} className="p-4 sm:p-6">
+            <form onSubmit={addCategory} className="p-4">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Category Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Category Name</label>
                   <input
                     required
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
                     value={newCategory.name}
                     onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
                   />
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Icon</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Icon</label>
                   <input
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
                     value={newCategory.icon}
                     onChange={(e) => setNewCategory({ ...newCategory, icon: e.target.value })}
                     placeholder="📱 or image URL"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
                   <textarea
                     rows="2"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
                     value={newCategory.description}
                     onChange={(e) => setNewCategory({ ...newCategory, description: e.target.value })}
                   />
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Parent Category</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Parent Category</label>
                   <select
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
                     value={newCategory.parentCategory}
                     onChange={(e) => setNewCategory({ ...newCategory, parentCategory: e.target.value })}
                   >
@@ -1528,7 +1657,6 @@ function AdminDashboard() {
                     ))}
                   </select>
                 </div>
-
                 <div>
                   <label className="flex items-center space-x-2">
                     <input
@@ -1542,18 +1670,8 @@ function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="mt-6 flex items-center justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setShowAddCategoryModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                >
+              <div className="sticky bottom-0 bg-white pt-4 mt-6 border-t border-gray-100 -mx-4 px-4">
+                <button type="submit" className="w-full py-3.5 bg-indigo-600 text-white rounded-xl font-medium">
                   Add Category
                 </button>
               </div>
@@ -1564,35 +1682,28 @@ function AdminDashboard() {
 
       {/* Add Promo Code Modal */}
       {showAddPromoModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
-            <div className="p-4 sm:p-6 border-b flex items-center justify-between">
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800">Create Promo Code</h3>
-              <button
-                onClick={() => setShowAddPromoModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-lg"
-              >
-                <X className="w-5 h-5 text-gray-500" />
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end lg:items-center justify-center z-50">
+          <div className="bg-white w-full lg:max-w-md lg:rounded-xl max-h-[90vh] overflow-auto rounded-t-2xl lg:rounded-xl">
+            <div className="sticky top-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Create Promo Code</h3>
+              <button onClick={() => setShowAddPromoModal(false)} className="p-2.5 hover:bg-gray-100 rounded-full min-h-[44px] min-w-[44px] flex items-center justify-center" title="Close">
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={addPromoCode} className="p-4 sm:p-6">
+            <form onSubmit={addPromoCode} className="p-4">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Promo Code</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Promo Code</label>
                   <div className="flex space-x-2">
                     <input
                       required
-                      className="flex-1 border border-gray-300 rounded-lg px-4 py-2 font-mono uppercase"
+                      className="flex-1 border border-gray-200 rounded-xl px-4 py-3 bg-gray-50 font-mono uppercase"
                       value={newPromo.code}
                       onChange={(e) => setNewPromo({ ...newPromo, code: e.target.value.toUpperCase() })}
                       placeholder="SAVE10"
                     />
-                    <button
-                      type="button"
-                      onClick={generatePromoCode}
-                      className="px-3 py-2 bg-gray-100 rounded-lg hover:bg-gray-200"
-                    >
+                    <button type="button" onClick={generatePromoCode} className="px-3 py-2 bg-gray-100 rounded-xl">
                       <RefreshCw className="w-5 h-5" />
                     </button>
                   </div>
@@ -1600,9 +1711,9 @@ function AdminDashboard() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Discount Type</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Discount Type</label>
                     <select
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                      className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
                       value={newPromo.discountType}
                       onChange={(e) => setNewPromo({ ...newPromo, discountType: e.target.value })}
                     >
@@ -1610,58 +1721,53 @@ function AdminDashboard() {
                       <option value="fixed">Fixed Amount</option>
                     </select>
                   </div>
-
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Value</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Value</label>
                     <input
                       type="number"
                       required
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                      className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
                       value={newPromo.discountValue}
                       onChange={(e) => setNewPromo({ ...newPromo, discountValue: e.target.value })}
-                      placeholder={newPromo.discountType === 'percentage' ? '10' : '100'}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Min Order (Rs.)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Min Order (Rs.)</label>
                   <input
                     type="number"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
                     value={newPromo.minOrderValue}
                     onChange={(e) => setNewPromo({ ...newPromo, minOrderValue: e.target.value })}
-                    placeholder="0 for no minimum"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Max Discount (Rs.)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Max Discount (Rs.)</label>
                   <input
                     type="number"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
                     value={newPromo.maxDiscount}
                     onChange={(e) => setNewPromo({ ...newPromo, maxDiscount: e.target.value })}
-                    placeholder="Leave empty for no limit"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Start Date</label>
                     <input
                       type="date"
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                      className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
                       value={newPromo.startDate}
                       onChange={(e) => setNewPromo({ ...newPromo, startDate: e.target.value })}
                     />
                   </div>
-
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">End Date</label>
                     <input
                       type="date"
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                      className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
                       value={newPromo.endDate}
                       onChange={(e) => setNewPromo({ ...newPromo, endDate: e.target.value })}
                     />
@@ -1669,13 +1775,12 @@ function AdminDashboard() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Usage Limit</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Usage Limit</label>
                   <input
                     type="number"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
                     value={newPromo.usageLimit}
                     onChange={(e) => setNewPromo({ ...newPromo, usageLimit: e.target.value })}
-                    placeholder="Leave empty for unlimited"
                   />
                 </div>
 
@@ -1692,18 +1797,8 @@ function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="mt-6 flex items-center justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setShowAddPromoModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                >
+              <div className="sticky bottom-0 bg-white pt-4 mt-6 border-t border-gray-100 -mx-4 px-4">
+                <button type="submit" className="w-full py-3.5 bg-indigo-600 text-white rounded-xl font-medium">
                   Create Promo
                 </button>
               </div>
@@ -1714,8 +1809,8 @@ function AdminDashboard() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 max-w-sm mx-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm mx-4">
             <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-center mb-2">Confirm Delete</h3>
             <p className="text-gray-500 text-center mb-6">
@@ -1724,13 +1819,13 @@ function AdminDashboard() {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(null)}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-xl hover:bg-gray-50"
               >
                 Cancel
               </button>
               <button
                 onClick={() => deleteItem(showDeleteConfirm.type, showDeleteConfirm.id)}
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700"
               >
                 Delete
               </button>
@@ -1741,34 +1836,29 @@ function AdminDashboard() {
 
       {/* Order Details Modal */}
       {showOrderDetails && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-auto">
-            <div className="p-4 sm:p-6 border-b flex items-center justify-between sticky top-0 bg-white">
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800">Order Details #{showOrderDetails._id?.slice(-8)}</h3>
-              <button
-                onClick={() => setShowOrderDetails(null)}
-                className="p-2 hover:bg-gray-100 rounded-lg"
-              >
-                <X className="w-5 h-5 text-gray-500" />
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end lg:items-center justify-center z-50">
+          <div className="bg-white w-full lg:max-w-2xl lg:rounded-xl max-h-[90vh] overflow-auto rounded-t-2xl lg:rounded-xl">
+            <div className="sticky top-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Order #{showOrderDetails._id?.slice(-8)}</h3>
+              <button onClick={() => setShowOrderDetails(null)} className="p-2.5 hover:bg-gray-100 rounded-full min-h-[44px] min-w-[44px] flex items-center justify-center" title="Close">
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-4 sm:p-6">
-              {/* Customer Info */}
-              <div className="mb-6">
-                <h4 className="font-semibold mb-3">Customer Information</h4>
-                <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="p-4">
+              <div className="mb-4">
+                <h4 className="font-semibold mb-2">Customer Information</h4>
+                <div className="bg-gray-50 p-3 rounded-xl">
                   <p><span className="font-medium">Name:</span> {showOrderDetails.userId?.name}</p>
                   <p><span className="font-medium">Email:</span> {showOrderDetails.userId?.email}</p>
                   <p><span className="font-medium">Phone:</span> {showOrderDetails.shippingAddress?.phone || 'N/A'}</p>
                 </div>
               </div>
 
-              {/* Shipping Address */}
               {showOrderDetails.shippingAddress && (
-                <div className="mb-6">
-                  <h4 className="font-semibold mb-3">Shipping Address</h4>
-                  <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="mb-4">
+                  <h4 className="font-semibold mb-2">Shipping Address</h4>
+                  <div className="bg-gray-50 p-3 rounded-xl">
                     <p>{showOrderDetails.shippingAddress.fullName}</p>
                     <p>{showOrderDetails.shippingAddress.address}</p>
                     <p>{showOrderDetails.shippingAddress.city}, {showOrderDetails.shippingAddress.state} - {showOrderDetails.shippingAddress.zipCode}</p>
@@ -1777,17 +1867,16 @@ function AdminDashboard() {
                 </div>
               )}
 
-              {/* Order Items */}
-              <div className="mb-6">
-                <h4 className="font-semibold mb-3">Order Items</h4>
-                <div className="space-y-3">
+              <div className="mb-4">
+                <h4 className="font-semibold mb-2">Order Items</h4>
+                <div className="space-y-2">
                   {showOrderDetails.items?.map((item, index) => (
-                    <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                    <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-xl">
                       <div className="flex items-center space-x-3">
-                        <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded" />
+                        <img src={item.image} alt={item.name} className="w-10 h-10 object-cover rounded" />
                         <div>
-                          <p className="font-medium">{item.name}</p>
-                          <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                          <p className="font-medium text-sm">{item.name}</p>
+                          <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
                         </div>
                       </div>
                       <p className="font-medium">Rs.{item.price * item.quantity}</p>
@@ -1796,34 +1885,32 @@ function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Order Summary */}
-              <div>
-                <h4 className="font-semibold mb-3">Order Summary</h4>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="flex justify-between mb-2">
+              <div className="mb-4">
+                <h4 className="font-semibold mb-2">Order Summary</h4>
+                <div className="bg-gray-50 p-3 rounded-xl">
+                  <div className="flex justify-between mb-1 text-sm">
                     <span>Subtotal:</span>
                     <span>Rs.{showOrderDetails.subtotal || showOrderDetails.total}</span>
                   </div>
-                  <div className="flex justify-between mb-2">
+                  <div className="flex justify-between mb-1 text-sm">
                     <span>Tax:</span>
                     <span>Rs.{showOrderDetails.tax || 0}</span>
                   </div>
                   {showOrderDetails.discount > 0 && (
-                    <div className="flex justify-between mb-2 text-green-600">
+                    <div className="flex justify-between mb-1 text-sm text-green-600">
                       <span>Discount:</span>
                       <span>-Rs.{showOrderDetails.discount}</span>
                     </div>
                   )}
-                  <div className="flex justify-between font-bold text-lg border-t pt-2 mt-2">
+                  <div className="flex justify-between font-bold text-base border-t pt-2 mt-2">
                     <span>Total:</span>
                     <span>Rs.{showOrderDetails.total}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Update Status */}
-              <div className="mt-6 pt-6 border-t">
-                <h4 className="font-semibold mb-3">Update Order Status</h4>
+              <div className="pt-4 border-t">
+                <h4 className="font-semibold mb-2">Update Status</h4>
                 <div className="flex flex-col sm:flex-row gap-2">
                   <select
                     value={showOrderDetails.status}
@@ -1831,7 +1918,7 @@ function AdminDashboard() {
                       updateOrderStatus(showOrderDetails._id, e.target.value);
                       setShowOrderDetails({ ...showOrderDetails, status: e.target.value });
                     }}
-                    className="flex-1 border border-gray-300 rounded-lg px-4 py-2"
+                    className="flex-1 border border-gray-200 rounded-xl px-4 py-3 bg-gray-50"
                   >
                     <option>Pending</option>
                     <option>Processing</option>
@@ -1839,9 +1926,7 @@ function AdminDashboard() {
                     <option>Delivered</option>
                     <option>Cancelled</option>
                   </select>
-                  <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-                    Update
-                  </button>
+                  <button className="px-4 py-3 bg-indigo-600 text-white rounded-xl">Update</button>
                 </div>
               </div>
             </div>
