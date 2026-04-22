@@ -510,54 +510,55 @@ function AdminDashboard() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex flex-col lg:flex-row h-screen bg-gray-50">
       {/* ========== MOBILE HEADER (PROFESSIONAL) ========== */}
-      <div className="lg:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-4 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-gradient-to-r from-white to-indigo-50 border-b border-gray-200 px-4 py-3 shadow-sm">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center space-x-3">
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="p-2.5 -ml-1 hover:bg-gray-100 rounded-full transition min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="p-2.5 -ml-2 hover:bg-gray-200/50 rounded-lg transition min-h-[40px] min-w-[40px] flex items-center justify-center"
               title="Open menu"
             >
-              <Menu className="w-6 h-6 text-gray-700" />
+              <Menu className="w-6 h-6 text-gray-800" />
             </button>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              StoreFlow
-            </h1>
+            <div>
+              <h1 className="text-base font-bold text-indigo-600">StoreFlow</h1>
+              <p className="text-xs text-gray-500">Admin Dashboard</p>
+            </div>
           </div>
 
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-1.5">
             <button
               onClick={() => setSearchExpanded(!searchExpanded)}
-              className="p-2.5 hover:bg-gray-100 rounded-full min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="p-2.5 hover:bg-gray-200/50 rounded-lg min-h-[40px] min-w-[40px] flex items-center justify-center transition"
               title="Search"
             >
-              <Search className="w-5 h-5 text-gray-600" />
+              <Search className="w-5 h-5 text-gray-700" />
             </button>
 
-            <button className="p-2.5 hover:bg-gray-100 rounded-full relative min-h-[44px] min-w-[44px] flex items-center justify-center" title="Notifications">
-              <Bell className="w-5 h-5 text-gray-600" />
+            <button className="p-2.5 hover:bg-gray-200/50 rounded-lg relative min-h-[40px] min-w-[40px] flex items-center justify-center transition" title="Notifications">
+              <Bell className="w-5 h-5 text-gray-700" />
               {pendingOrders > 0 && (
-                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
               )}
             </button>
 
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold shadow-sm">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shadow-md">
               A
             </div>
           </div>
         </div>
 
-        <div className={`mt-3 overflow-hidden transition-all duration-200 ${searchExpanded ? 'max-h-16 opacity-100' : 'max-h-0 opacity-0'}`}>
+        <div className={`overflow-hidden transition-all duration-300 ${searchExpanded ? 'max-h-12 opacity-100' : 'max-h-0 opacity-0'}`}>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
-              placeholder="Search products, orders..."
+              placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+              className="w-full pl-10 pr-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs shadow-sm"
               autoFocus={searchExpanded}
             />
           </div>
@@ -612,7 +613,7 @@ function AdminDashboard() {
       )}
 
       {/* ========== DESKTOP SIDEBAR ========== */}
-      <div className={`hidden lg:block ${sidebarOpen ? 'w-64' : 'w-20'} bg-white shadow-lg transition-all duration-300 relative`}>
+      <div className={`hidden lg:flex flex-col ${sidebarOpen ? 'w-64' : 'w-20'} bg-white shadow-lg transition-all duration-300 relative`}>
         <div className="p-4 border-b flex items-center justify-between">
           {sidebarOpen ? (
             <h1 className="text-xl font-bold text-indigo-600">StoreFlow Admin</h1>
@@ -668,7 +669,7 @@ function AdminDashboard() {
       </div>
 
       {/* ========== MAIN CONTENT ========== */}
-      <div className="flex-1 overflow-auto pb-20 sm:pb-24 md:pb-16 lg:pb-0">
+      <div className="flex-1 overflow-auto pb-20 sm:pb-24 md:pb-16 lg:pb-0 w-full pt-[140px] lg:pt-0">
         {/* Desktop Header */}
         <header className="hidden lg:block bg-white shadow-sm sticky top-0 z-10">
           <div className="flex items-center justify-between px-6 py-4">
@@ -725,118 +726,118 @@ function AdminDashboard() {
         </header>
 
         {/* ========== DASHBOARD CONTENT ========== */}
-        <div className="p-4 sm:p-6">
+        <div className="p-3 sm:p-6 space-y-6 w-full">
           {/* DASHBOARD TAB */}
           {activeTab === "dashboard" && (
             <>
-              {/* Stats Grid - Horizontal scroll on mobile with snap */}
-              <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-6 mb-8 md:space-x-0">
-                <div className="min-w-[calc(100vw-2rem)] xs:min-w-[calc(50vw-2rem)] sm:min-w-[calc(50vw-3rem)] md:min-w-0 snap-start bg-white rounded-2xl shadow-sm p-4 sm:p-5 border border-gray-100">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs sm:text-sm md:text-xs lg:text-sm text-gray-500 mb-1">Total Revenue</p>
-                      <p className="text-lg sm:text-2xl md:text-lg lg:text-2xl font-bold text-gray-800">Rs.{totalRevenue.toLocaleString()}</p>
-                      <p className="text-xs text-green-500 mt-2">↑ 12.5%</p>
+              {/* Stats Grid - 2 column on mobile, 4 on desktop */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-6">
+                <div className="bg-gradient-to-br from-green-50 to-green-100/50 rounded-lg shadow-sm p-3 sm:p-4 border border-green-100 hover:shadow-md transition">
+                  <div className="flex items-start gap-2">
+                    <div className="bg-green-500 p-2 rounded-lg shadow-md flex-shrink-0">
+                      <DollarSign className="w-4 h-4 text-white" />
                     </div>
-                    <div className="bg-green-500 p-2 sm:p-3 rounded-lg">
-                      <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="min-w-[calc(100vw-2rem)] xs:min-w-[calc(50vw-2rem)] sm:min-w-[calc(50vw-3rem)] md:min-w-0 snap-start bg-white rounded-2xl shadow-sm p-4 sm:p-5 border border-gray-100">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs sm:text-sm md:text-xs lg:text-sm text-gray-500 mb-1">Total Orders</p>
-                      <p className="text-lg sm:text-2xl md:text-lg lg:text-2xl font-bold text-gray-800">{totalOrders}</p>
-                      <p className="text-xs text-gray-500 mt-2">{pendingOrders} pending</p>
-                    </div>
-                    <div className="bg-purple-500 p-2 sm:p-3 rounded-lg">
-                      <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs text-green-700 font-medium truncate">Revenue</p>
+                      <p className="text-base sm:text-lg font-bold text-green-900 truncate">Rs.{(totalRevenue / 1000).toFixed(1)}K</p>
+                      <p className="text-xs text-green-600 mt-1">↑ 12.5%</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="min-w-[calc(100vw-2rem)] xs:min-w-[calc(50vw-2rem)] sm:min-w-[calc(50vw-3rem)] md:min-w-0 snap-start bg-white rounded-2xl shadow-sm p-4 sm:p-5 border border-gray-100">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs sm:text-sm md:text-xs lg:text-sm text-gray-500 mb-1">Total Customers</p>
-                      <p className="text-lg sm:text-2xl md:text-lg lg:text-2xl font-bold text-gray-800">{totalUsers}</p>
-                      <p className="text-xs text-gray-500 mt-2">{users.filter(u => u.role === 'user').length} active</p>
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-lg shadow-sm p-3 sm:p-4 border border-purple-100 hover:shadow-md transition">
+                  <div className="flex items-start gap-2">
+                    <div className="bg-purple-500 p-2 rounded-lg shadow-md flex-shrink-0">
+                      <ShoppingCart className="w-4 h-4 text-white" />
                     </div>
-                    <div className="bg-blue-500 p-2 sm:p-3 rounded-lg">
-                      <Users className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs text-purple-700 font-medium truncate">Orders</p>
+                      <p className="text-base sm:text-lg font-bold text-purple-900">{totalOrders}</p>
+                      <p className="text-xs text-purple-600 mt-1">{pendingOrders} pending</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="min-w-[calc(100vw-2rem)] xs:min-w-[calc(50vw-2rem)] sm:min-w-[calc(50vw-3rem)] md:min-w-0 snap-start bg-white rounded-2xl shadow-sm p-4 sm:p-5 border border-gray-100">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs sm:text-sm md:text-xs lg:text-sm text-gray-500 mb-1">Products</p>
-                      <p className="text-lg sm:text-2xl md:text-lg lg:text-2xl font-bold text-gray-800">{totalProducts}</p>
-                      <p className="text-xs text-gray-500 mt-2">{products.filter(p => p.stock < 10).length} low stock</p>
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-lg shadow-sm p-3 sm:p-4 border border-blue-100 hover:shadow-md transition">
+                  <div className="flex items-start gap-2">
+                    <div className="bg-blue-500 p-2 rounded-lg shadow-md flex-shrink-0">
+                      <Users className="w-4 h-4 text-white" />
                     </div>
-                    <div className="bg-indigo-500 p-2 sm:p-3 rounded-lg">
-                      <Package className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs text-blue-700 font-medium truncate">Customers</p>
+                      <p className="text-base sm:text-lg font-bold text-blue-900">{totalUsers}</p>
+                      <p className="text-xs text-blue-600 mt-1">{users.filter(u => u.role === 'user').length} active</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-indigo-50 to-indigo-100/50 rounded-lg shadow-sm p-3 sm:p-4 border border-indigo-100 hover:shadow-md transition">
+                  <div className="flex items-start gap-2">
+                    <div className="bg-indigo-500 p-2 rounded-lg shadow-md flex-shrink-0">
+                      <Package className="w-4 h-4 text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs text-indigo-700 font-medium truncate">Products</p>
+                      <p className="text-base sm:text-lg font-bold text-indigo-900">{totalProducts}</p>
+                      <p className="text-xs text-indigo-600 mt-1">{products.filter(p => p.stock < 10).length} low</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Second Row Stats */}
-              <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-6 mb-8 md:space-x-0">
-                <div className="min-w-[calc(100vw-2rem)] xs:min-w-[calc(50vw-2rem)] sm:min-w-[calc(50vw-3rem)] md:min-w-0 snap-start bg-white rounded-2xl shadow-sm p-4 sm:p-5 border border-gray-100">
-                  <div className="flex items-center space-x-3">
-                    <div className="bg-yellow-100 p-2 sm:p-3 rounded-lg">
-                      <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-600" />
+              {/* Second Row Stats - Order Status - 2 Column Grid */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-6">
+                <div className="bg-yellow-50 rounded-lg shadow-sm p-3 sm:p-4 border border-yellow-100 hover:shadow-md transition">
+                  <div className="flex items-center gap-2.5">
+                    <div className="bg-yellow-500 p-2 rounded-lg flex-shrink-0">
+                      <Clock className="w-4 h-4 text-white" />
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-500">Pending</p>
-                      <p className="text-lg sm:text-xl font-bold">{pendingOrders}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="min-w-[calc(100vw-2rem)] xs:min-w-[calc(50vw-2rem)] sm:min-w-[calc(50vw-3rem)] md:min-w-0 snap-start bg-white rounded-2xl shadow-sm p-4 sm:p-5 border border-gray-100">
-                  <div className="flex items-center space-x-3">
-                    <div className="bg-blue-100 p-2 sm:p-3 rounded-lg">
-                      <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500">Processing</p>
-                      <p className="text-lg sm:text-xl font-bold">{processingOrders}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs text-yellow-700 font-medium truncate">Pending</p>
+                      <p className="text-base font-bold text-yellow-900">{pendingOrders}</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="min-w-[calc(100vw-2rem)] xs:min-w-[calc(50vw-2rem)] sm:min-w-[calc(50vw-3rem)] md:min-w-0 snap-start bg-white rounded-2xl shadow-sm p-4 sm:p-5 border border-gray-100">
-                  <div className="flex items-center space-x-3">
-                    <div className="bg-purple-100 p-2 sm:p-3 rounded-lg">
-                      <Truck className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-purple-600" />
+                <div className="bg-blue-50 rounded-lg shadow-sm p-3 sm:p-4 border border-blue-100 hover:shadow-md transition">
+                  <div className="flex items-center gap-2.5">
+                    <div className="bg-blue-500 p-2 rounded-lg flex-shrink-0">
+                      <RefreshCw className="w-4 h-4 text-white" />
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-500">Shipped</p>
-                      <p className="text-lg sm:text-xl font-bold">{shippedOrders}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs text-blue-700 font-medium truncate">Processing</p>
+                      <p className="text-base font-bold text-blue-900">{processingOrders}</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="min-w-[calc(100vw-2rem)] xs:min-w-[calc(50vw-2rem)] sm:min-w-[calc(50vw-3rem)] md:min-w-0 snap-start bg-white rounded-2xl shadow-sm p-4 sm:p-5 border border-gray-100">
-                  <div className="flex items-center space-x-3">
-                    <div className="bg-green-100 p-2 sm:p-3 rounded-lg">
-                      <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-600" />
+                <div className="bg-purple-50 rounded-lg shadow-sm p-3 sm:p-4 border border-purple-100 hover:shadow-md transition">
+                  <div className="flex items-center gap-2.5">
+                    <div className="bg-purple-500 p-2 rounded-lg flex-shrink-0">
+                      <Truck className="w-4 h-4 text-white" />
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-500">Delivered</p>
-                      <p className="text-lg sm:text-xl font-bold">{deliveredOrders}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs text-purple-700 font-medium truncate">Shipped</p>
+                      <p className="text-base font-bold text-purple-900">{shippedOrders}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-green-50 rounded-lg shadow-sm p-3 sm:p-4 border border-green-100 hover:shadow-md transition">
+                  <div className="flex items-center gap-2.5">
+                    <div className="bg-green-500 p-2 rounded-lg flex-shrink-0">
+                      <CheckCircle className="w-4 h-4 text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs text-green-700 font-medium truncate">Delivered</p>
+                      <p className="text-base font-bold text-green-900">{deliveredOrders}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Charts and Tables */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                 <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm p-4 sm:p-6 border border-gray-100">
                   <h3 className="text-base sm:text-lg font-semibold mb-4">Revenue Overview</h3>
                   <div className="h-48 sm:h-64 flex items-center justify-center bg-gray-50 rounded-lg">
@@ -1456,25 +1457,30 @@ function AdminDashboard() {
       </div>
 
       {/* ========== MOBILE BOTTOM NAVIGATION ========== */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 px-2 py-2 z-30 pb-2">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-1 py-1.5 z-30 shadow-2xl shadow-gray-900/10">
         <div className="flex items-center justify-around">
           {navigation.slice(0, 5).map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex flex-col items-center py-2.5 px-4 rounded-xl transition min-h-[44px] min-w-[44px] justify-center ${activeTab === item.id ? 'text-indigo-600' : 'text-gray-500'
-                }`}
+              className={`flex flex-col items-center py-2.5 px-3 rounded-lg transition min-h-[48px] min-w-[48px] justify-center ${
+                activeTab === item.id 
+                  ? 'text-indigo-600 bg-indigo-50' 
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+              }`}
+              title={item.name}
             >
               <item.icon className="w-5 h-5" />
-              <span className="text-[11px] font-medium mt-1 leading-tight">{item.name}</span>
+              <span className="text-[10px] font-semibold mt-1 leading-tight whitespace-nowrap">{item.name}</span>
             </button>
           ))}
           <button
             onClick={() => setMobileMenuOpen(true)}
-            className="flex flex-col items-center py-2.5 px-4 rounded-xl text-gray-500 min-h-[44px] min-w-[44px] justify-center"
+            className="flex flex-col items-center py-2.5 px-3 rounded-lg text-gray-600 hover:text-gray-800 hover:bg-gray-100 min-h-[48px] min-w-[48px] justify-center transition"
+            title="More options"
           >
             <Grid className="w-5 h-5" />
-            <span className="text-[11px] font-medium mt-1 leading-tight">More</span>
+            <span className="text-[10px] font-semibold mt-1 leading-tight">More</span>
           </button>
         </div>
       </div>
