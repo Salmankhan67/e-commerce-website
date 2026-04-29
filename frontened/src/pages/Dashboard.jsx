@@ -2,7 +2,6 @@ import { useCart } from '../context/CartContext';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API } from '../config';
-// Add this line with your other imports
 import { API_BASE_URL } from '../config';
 import {
   ShoppingBag,
@@ -23,7 +22,6 @@ import {
   Clock,
   Truck,
   Shield,
-  CreditCard
 } from 'lucide-react';
 
 function Dashboard() {
@@ -38,7 +36,7 @@ function Dashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('default');
-  const [viewMode, setViewMode] = useState('grid'); // grid or list
+  const [viewMode, setViewMode] = useState('grid');
   const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 });
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,8 +45,6 @@ function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const productsPerPage = 8;
-
-  // Get categories from products
   const categories = ['all', ...new Set(products.map(p => p.category || 'Uncategorized'))];
 
   if (!cartContext) {
@@ -68,7 +64,6 @@ function Dashboard() {
     );
   }
 
-  // Get user info
   const getUser = () => {
     const auth = JSON.parse(localStorage.getItem('auth') || 'null');
     return auth?.user || null;
@@ -88,9 +83,7 @@ function Dashboard() {
 
   const fetchProducts = () => {
     const token = getToken();
-
     if (!token) {
-      console.error('No token found, redirecting to login');
       navigate('/signin');
       return;
     }
@@ -103,7 +96,6 @@ function Dashboard() {
     })
       .then(res => {
         if (res.status === 401) {
-          console.error('Unauthorized - token invalid');
           localStorage.removeItem('auth');
           navigate('/signin');
           throw new Error('Unauthorized');
@@ -114,15 +106,12 @@ function Dashboard() {
         return res.json();
       })
       .then(data => {
-        console.log('fetched products', data);
         if (Array.isArray(data)) {
           setProducts(data);
           setFilteredProducts(data);
-          // Set max price range based on products
           const maxPrice = Math.max(...data.map(p => Number(p.price) || 0), 10000);
           setPriceRange(prev => ({ ...prev, max: maxPrice }));
         } else {
-          console.error('Expected array, got:', typeof data, data);
           setProducts([]);
           setFilteredProducts([]);
           setError('Invalid data format');
@@ -130,7 +119,6 @@ function Dashboard() {
         setLoading(false);
       })
       .catch(err => {
-        console.log("Error loading products:", err);
         setError("Unable to load products");
         setProducts([]);
         setFilteredProducts([]);
@@ -138,7 +126,6 @@ function Dashboard() {
       });
   };
 
-  // Load wishlist from localStorage
   useEffect(() => {
     const savedWishlist = localStorage.getItem('wishlist');
     if (savedWishlist) {
@@ -146,35 +133,25 @@ function Dashboard() {
     }
   }, []);
 
-  // Save wishlist to localStorage
   useEffect(() => {
     localStorage.setItem('wishlist', JSON.stringify(wishlist));
   }, [wishlist]);
 
-  // Filter and sort products
   useEffect(() => {
     let result = [...products];
-
-    // Apply search
     if (searchTerm) {
       result = result.filter(p =>
         p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.description?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-
-    // Apply category filter
     if (selectedCategory !== 'all') {
       result = result.filter(p => p.category === selectedCategory);
     }
-
-    // Apply price filter
     result = result.filter(p => {
       const price = Number(p.price) || 0;
       return price >= priceRange.min && price <= priceRange.max;
     });
-
-    // Apply sorting
     switch (sortBy) {
       case 'price-low':
         result.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
@@ -185,20 +162,13 @@ function Dashboard() {
       case 'name':
         result.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
         break;
-      case 'newest':
-        // Assuming _id contains timestamp or use createdAt if available
-        result.sort((a, b) => (b._id || '').localeCompare(a._id || ''));
-        break;
       default:
-        // Keep original order
         break;
     }
-
     setFilteredProducts(result);
     setCurrentPage(1);
   }, [searchTerm, selectedCategory, sortBy, priceRange, products]);
 
-  // Pagination
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
@@ -218,7 +188,6 @@ function Dashboard() {
 
   const handleAddToCart = (product) => {
     addToCart(product);
-    // Show temporary notification
     const notification = document.createElement('div');
     notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slideIn';
     notification.textContent = `${product.name} added to cart!`;
@@ -239,9 +208,9 @@ function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Mobile Sidebar */}
-      <div className={`fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity lg:hidden ${sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} onClick={() => setSidebarOpen(false)} />
+      <div className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity lg:hidden ${sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} onClick={() => setSidebarOpen(false)} />
 
-      <div className={`fixed top-0 left-0 h-full w-64 bg-white shadow-2xl z-50 transform transition-transform lg:hidden ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div className={`fixed top-0 left-0 h-full w-64 bg-white shadow-2xl z-40 transform transition-transform lg:hidden ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6 border-b">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-indigo-600">Menu</h2>
@@ -259,8 +228,20 @@ function Dashboard() {
                 <p className="text-xs text-gray-500">{user?.email || ''}</p>
               </div>
             </div>
+            
+            {/* FIXED CART BUTTON - Works with empty or full cart */}
             <button
-              onClick={() => navigate('/cart')}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Close sidebar first
+                setSidebarOpen(false);
+                // Small delay to ensure sidebar closes before opening modal
+                setTimeout(() => {
+                  setShowCartPreview(true);
+                }, 50);
+              }}
               className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg"
             >
               <div className="flex items-center space-x-3">
@@ -273,7 +254,9 @@ function Dashboard() {
                 </span>
               )}
             </button>
+            
             <button
+              type="button"
               onClick={() => navigate('/orders')}
               className="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg"
             >
@@ -281,6 +264,7 @@ function Dashboard() {
               <span>Orders</span>
             </button>
             <button
+              type="button"
               onClick={() => navigate('/wishlist')}
               className="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg"
             >
@@ -293,6 +277,7 @@ function Dashboard() {
               )}
             </button>
             <button
+              type="button"
               onClick={handleLogout}
               className="w-full flex items-center space-x-3 p-3 text-red-600 hover:bg-red-50 rounded-lg"
             >
@@ -311,6 +296,7 @@ function Dashboard() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <button
+                  type="button"
                   onClick={() => setSidebarOpen(true)}
                   className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
                 >
@@ -325,70 +311,7 @@ function Dashboard() {
               </div>
             </div>
 
-            <div className="flex items-center space-x-4">
-              {/* Cart Preview */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowCartPreview(!showCartPreview)}
-                  className="relative p-3 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition"
-                >
-                  <ShoppingCart className="w-6 h-6 text-indigo-600" />
-                  {totalItems > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                      {totalItems}
-                    </span>
-                  )}
-                </button>
-
-                {/* Cart Preview Dropdown */}
-                {showCartPreview && (
-                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-2xl z-50 border">
-                    <div className="p-4 border-b">
-                      <h3 className="font-semibold">Shopping Cart ({totalItems} items)</h3>
-                    </div>
-                    <div className="max-h-96 overflow-auto p-4">
-                      {cart?.length === 0 ? (
-                        <p className="text-gray-500 text-center py-8">Your cart is empty</p>
-                      ) : (
-                        <>
-                          {cart?.map((item, index) => (
-                            <div key={index} className="flex items-center space-x-3 mb-3 pb-3 border-b last:border-0">
-                              {/* // Display product image with fallback */}
-
-                              <img
-                                src={item.image ? `${API_BASE_URL}${item.image}` : 'https://via.placeholder.com/50?text=Product'}
-                                alt={item.name}
-                                className="w-12 h-12 object-cover rounded"
-                                onError={(e) => {
-                                  e.target.src = 'https://via.placeholder.com/50?text=Product';
-                                }}
-                              />
-                              <div className="flex-1">
-                                <p className="text-sm font-medium line-clamp-1">{item.name}</p>
-                                <p className="text-xs text-gray-500">Qty: {item.quantity || 1}</p>
-                              </div>
-                              <p className="text-sm font-bold">Rs.{item.price}</p>
-                            </div>
-                          ))}
-                          <div className="mt-4 pt-4 border-t">
-                            <div className="flex justify-between mb-4">
-                              <span>Total:</span>
-                              <span className="font-bold">Rs.{getCartTotal()}</span>
-                            </div>
-                            <button
-                              onClick={() => navigate('/cart')}
-                              className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700"
-                            >
-                              View Cart
-                            </button>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
+            <div className="flex items-center space-x-4">            
               {/* Desktop User Menu */}
               <div className="hidden lg:flex items-center space-x-4">
                 <div className="flex items-center space-x-3 px-4 py-2 bg-gray-50 rounded-xl">
@@ -399,6 +322,7 @@ function Dashboard() {
                   </div>
                 </div>
                 <button
+                  type="button"
                   onClick={handleLogout}
                   className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
                 >
@@ -428,6 +352,7 @@ function Dashboard() {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="flex items-center space-x-4">
               <button
+                type="button"
                 onClick={() => setShowFilters(!showFilters)}
                 className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition lg:hidden"
               >
@@ -457,17 +382,18 @@ function Dashboard() {
                   <option value="price-low">Price: Low to High</option>
                   <option value="price-high">Price: High to Low</option>
                   <option value="name">Name</option>
-                  <option value="newest">Newest</option>
                 </select>
 
                 <div className="flex items-center space-x-2 border rounded-lg p-1">
                   <button
+                    type="button"
                     onClick={() => setViewMode('grid')}
                     className={`p-2 rounded ${viewMode === 'grid' ? 'bg-indigo-600 text-white' : 'hover:bg-gray-100'}`}
                   >
                     <Grid3x3 className="w-4 h-4" />
                   </button>
                   <button
+                    type="button"
                     onClick={() => setViewMode('list')}
                     className={`p-2 rounded ${viewMode === 'list' ? 'bg-indigo-600 text-white' : 'hover:bg-gray-100'}`}
                   >
@@ -507,17 +433,18 @@ function Dashboard() {
                   <option value="price-low">Price: Low to High</option>
                   <option value="price-high">Price: High to Low</option>
                   <option value="name">Name</option>
-                  <option value="newest">Newest</option>
                 </select>
 
                 <div className="flex items-center space-x-2">
                   <button
+                    type="button"
                     onClick={() => setViewMode('grid')}
                     className={`flex-1 py-2 rounded ${viewMode === 'grid' ? 'bg-indigo-600 text-white' : 'border'}`}
                   >
                     Grid
                   </button>
                   <button
+                    type="button"
                     onClick={() => setViewMode('list')}
                     className={`flex-1 py-2 rounded ${viewMode === 'list' ? 'bg-indigo-600 text-white' : 'border'}`}
                   >
@@ -546,6 +473,7 @@ function Dashboard() {
             <div className="text-red-500 text-6xl mb-4">😕</div>
             <p className="text-xl text-gray-600 mb-4">{error}</p>
             <button
+              type="button"
               onClick={fetchProducts}
               className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
             >
@@ -563,14 +491,8 @@ function Dashboard() {
             {viewMode === 'grid' ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {currentProducts.map(product => (
-                  <div
-                    key={product._id}
-                    className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group"
-                  >
+                  <div key={product._id} className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group">
                     <div className="relative overflow-hidden rounded-t-2xl">
-
-                      {/* //images// */}
-
                       <img
                         src={product.image ? `${API_BASE_URL}${product.image}` : 'https://via.placeholder.com/300?text=Product'}
                         alt={product.name}
@@ -579,53 +501,28 @@ function Dashboard() {
                           e.target.src = 'https://via.placeholder.com/300?text=Product';
                         }}
                       />
-                      {product.discount > 0 && (
-                        <span className="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                          -{product.discount}% OFF
-                        </span>
-                      )}
                       <button
+                        type="button"
                         onClick={() => toggleWishlist(product)}
-                        className={`absolute top-4 right-4 p-2 rounded-full transition ${isInWishlist(product._id)
-                          ? 'bg-red-500 text-white'
-                          : 'bg-white text-gray-600 hover:bg-red-500 hover:text-white'
-                          }`}
+                        className={`absolute top-4 right-4 p-2 rounded-full transition ${isInWishlist(product._id) ? 'bg-red-500 text-white' : 'bg-white text-gray-600 hover:bg-red-500 hover:text-white'}`}
                       >
                         <Heart className={`w-4 h-4 ${isInWishlist(product._id) ? 'fill-current' : ''}`} />
                       </button>
                     </div>
                     <div className="p-5">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold text-lg text-gray-800">{product.name}</h3>
-                        <div className="flex items-center">
-                          <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                          <span className="text-sm ml-1">4.5</span>
-                        </div>
-                      </div>
+                      <h3 className="font-semibold text-lg text-gray-800 mb-2">{product.name}</h3>
                       <p className="text-gray-500 text-sm mb-3 line-clamp-2">{product.description}</p>
                       <div className="flex items-center justify-between mb-4">
-                        <div>
-                          <span className="text-2xl font-bold text-indigo-600">Rs.{product.price}</span>
-                          {product.discount > 0 && (
-                            <span className="ml-2 text-sm text-gray-400 line-through">
-                              Rs.{Math.round(product.price * (1 + product.discount / 100))}
-                            </span>
-                          )}
-                        </div>
-                        <span className={`text-xs font-medium px-2 py-1 rounded-full ${product.stock > 10 ? 'bg-green-100 text-green-800' :
-                          product.stock > 0 ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-red-100 text-red-800'
-                          }`}>
+                        <span className="text-2xl font-bold text-indigo-600">Rs.{product.price}</span>
+                        <span className={`text-xs font-medium px-2 py-1 rounded-full ${product.stock > 10 ? 'bg-green-100 text-green-800' : product.stock > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
                           {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
                         </span>
                       </div>
                       <button
+                        type="button"
                         onClick={() => handleAddToCart(product)}
                         disabled={product.stock === 0}
-                        className={`w-full py-3 rounded-xl font-semibold transition flex items-center justify-center space-x-2 ${product.stock > 0
-                          ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                          : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                          }`}
+                        className={`w-full py-3 rounded-xl font-semibold transition flex items-center justify-center space-x-2 ${product.stock > 0 ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'bg-gray-200 text-gray-500 cursor-not-allowed'}`}
                       >
                         <ShoppingCart className="w-4 h-4" />
                         <span>{product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}</span>
@@ -639,9 +536,6 @@ function Dashboard() {
                 {currentProducts.map(product => (
                   <div key={product._id} className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-xl transition">
                     <div className="flex flex-col md:flex-row md:items-center gap-6">
-
-                      {/* //IMAGES// */}
-
                       <img
                         src={product.image ? `${API_BASE_URL}${product.image}` : 'https://via.placeholder.com/300?text=Product'}
                         alt={product.name}
@@ -657,9 +551,9 @@ function Dashboard() {
                             <p className="text-gray-500 mt-1">{product.description}</p>
                           </div>
                           <button
+                            type="button"
                             onClick={() => toggleWishlist(product)}
-                            className={`p-2 rounded-full ${isInWishlist(product._id) ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
-                              }`}
+                            className={`p-2 rounded-full ${isInWishlist(product._id) ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
                           >
                             <Heart className={`w-5 h-5 ${isInWishlist(product._id) ? 'fill-current' : ''}`} />
                           </button>
@@ -667,20 +561,15 @@ function Dashboard() {
                         <div className="flex flex-wrap items-center justify-between mt-4">
                           <div className="flex items-center space-x-4">
                             <span className="text-2xl font-bold text-indigo-600">Rs.{product.price}</span>
-                            <span className={`text-sm font-medium px-3 py-1 rounded-full ${product.stock > 10 ? 'bg-green-100 text-green-800' :
-                              product.stock > 0 ? 'bg-yellow-100 text-yellow-800' :
-                                'bg-red-100 text-red-800'
-                              }`}>
+                            <span className={`text-sm font-medium px-3 py-1 rounded-full ${product.stock > 10 ? 'bg-green-100 text-green-800' : product.stock > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
                               {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
                             </span>
                           </div>
                           <button
+                            type="button"
                             onClick={() => handleAddToCart(product)}
                             disabled={product.stock === 0}
-                            className={`px-6 py-2 rounded-lg font-semibold transition flex items-center space-x-2 ${product.stock > 0
-                              ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                              : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                              }`}
+                            className={`px-6 py-2 rounded-lg font-semibold transition flex items-center space-x-2 ${product.stock > 0 ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'bg-gray-200 text-gray-500 cursor-not-allowed'}`}
                           >
                             <ShoppingCart className="w-4 h-4" />
                             <span>Add to Cart</span>
@@ -693,10 +582,10 @@ function Dashboard() {
               </div>
             )}
 
-            {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex justify-center items-center space-x-2 mt-8">
                 <button
+                  type="button"
                   onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
                   className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -705,17 +594,16 @@ function Dashboard() {
                 </button>
                 {[...Array(totalPages)].map((_, i) => (
                   <button
+                    type="button"
                     key={i + 1}
                     onClick={() => setCurrentPage(i + 1)}
-                    className={`w-10 h-10 rounded-lg transition ${currentPage === i + 1
-                      ? 'bg-indigo-600 text-white'
-                      : 'hover:bg-gray-100'
-                      }`}
+                    className={`w-10 h-10 rounded-lg transition ${currentPage === i + 1 ? 'bg-indigo-600 text-white' : 'hover:bg-gray-100'}`}
                   >
                     {i + 1}
                   </button>
                 ))}
                 <button
+                  type="button"
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
                   className="p-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -728,7 +616,6 @@ function Dashboard() {
         )}
 
         {/* Features Section */}
-
         <div className="mt-16 grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded-xl shadow-sm">
             <Truck className="w-10 h-10 text-indigo-600 mb-4" />
@@ -752,6 +639,106 @@ function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* CART PREVIEW MODAL - RENDERED AT ROOT LEVEL */}
+      {showCartPreview && (
+        <div 
+          className="fixed inset-0 flex items-center justify-center z-[200]"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowCartPreview(false);
+            }
+          }}
+        >
+          <div className="bg-white rounded-xl shadow-2xl border w-96 max-w-[90vw]">
+            <div className="p-4 border-b flex justify-between items-center bg-gradient-to-r from-indigo-50 to-purple-50 rounded-t-xl">
+              <h3 className="font-semibold text-lg">Shopping Cart ({totalItems} items)</h3>
+              <button 
+                type="button"
+                onClick={() => setShowCartPreview(false)}
+                className="p-1 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="max-h-96 overflow-auto">
+              <div className="p-4">
+                {!cart || cart.length === 0 ? (
+                  <div className="text-center py-8">
+                    <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500">Your cart is empty</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowCartPreview(false);
+                      }}
+                      className="mt-4 text-indigo-600 hover:text-indigo-700 text-sm font-medium"
+                    >
+                      Continue Shopping →
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    {cart.map((item, index) => (
+                      <div key={index} className="flex items-center space-x-3 mb-4 pb-4 border-b last:border-0">
+                        <img
+                          src={item.image ? `${API_BASE_URL}${item.image}` : 'https://via.placeholder.com/60?text=Product'}
+                          alt={item.name}
+                          className="w-16 h-16 object-cover rounded-lg"
+                          onError={(e) => {
+                            e.target.src = 'https://via.placeholder.com/60?text=Product';
+                          }}
+                        />
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold text-gray-800 line-clamp-1">{item.name}</p>
+                          <p className="text-xs text-gray-500 mt-1">Qty: {item.quantity || 1}</p>
+                          <p className="text-xs text-indigo-600 font-medium mt-1">Rs.{item.price}</p>
+                        </div>
+                        <p className="text-sm font-bold text-indigo-600">
+                          Rs.{(item.price * (item.quantity || 1)).toLocaleString()}
+                        </p>
+                      </div>
+                    ))}
+                    <div className="mt-4 pt-4 border-t">
+                      <div className="flex justify-between mb-4">
+                        <span className="font-semibold text-gray-700">Total:</span>
+                        <span className="font-bold text-xl text-indigo-600">Rs.{getCartTotal().toLocaleString()}</span>
+                      </div>
+                      <div className="flex gap-3">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setShowCartPreview(false);
+                          }}
+                          className="flex-1 px-4 py-2 border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors"
+                        >
+                          Continue Shopping
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setShowCartPreview(false);
+                            setTimeout(() => {
+                              navigate('/cart');
+                            }, 50);
+                          }}
+                          className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold"
+                        >
+                          View Cart
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
